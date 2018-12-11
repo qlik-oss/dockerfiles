@@ -1,0 +1,5 @@
+name: node-build
+description: |
+    This image is built to support building Node.js-based projects in CircleCI. It comes
+    populated with software generally useful for building and deploying. See the
+    `Dockerfile` in this folder for details.

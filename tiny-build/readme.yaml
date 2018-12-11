@@ -1,0 +1,5 @@
+name: tiny-build
+description: |
+    This image is built to support building generic (no language specifics) projects in CircleCI. It comes
+    populated with software generally useful for building and deploying. See the
+    `Dockerfile` in this folder for details.

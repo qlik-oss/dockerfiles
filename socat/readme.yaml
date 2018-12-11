@@ -1,0 +1,4 @@
+name: socat
+description: |
+    [`Socat`](http://www.dest-unreach.org/socat/), packaged in an alpine image, with
+    `ca-certificates` (to help with HTTPS stuff).

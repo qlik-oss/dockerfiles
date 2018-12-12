@@ -8,8 +8,11 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.03.0-ce
-      - run: docker build -f socat/Dockerfile socat/
-      - run: docker build -f tiny-build/Dockerfile tiny-build/
-      - run: docker build -f go-build/Dockerfile go-build/
-      - run: docker build -f node-build/Dockerfile node-build/
-      - run: docker build -f py-build/Dockerfile py-build/
+      - run: 
+          name: Build Docker Images
+          command: |
+            docker build -f socat/Dockerfile socat/
+            docker build -f tiny-build/Dockerfile tiny-build/
+            docker build -f go-build/Dockerfile go-build/
+            docker build -f node-build/Dockerfile node-build/
+            docker build -f py-build/Dockerfile py-build/

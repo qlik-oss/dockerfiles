@@ -2,13 +2,9 @@
 
 A collection of simple Dockerfiles packaging open-source components for various purposes.
 
-## Third-Party Licenses
+## License
 
-As with all Docker images, these also contain other software which may be under other licenses, along with any direct or indirect dependencies of the primary software being contained.
-
-As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
-
-The licenses of the contained software can be determined from each project's `Dockerfile`.
+This repository, including the Dockerfiles contained within, is licensed with the [MIT license](./LICENSE).
 
 ## Unsupported
 

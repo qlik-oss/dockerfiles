@@ -4,7 +4,7 @@ A collection of simple Dockerfiles packaging open-source components for various 
 
 ## License
 
-This repository, including the Dockerfiles contained within, is licensed with the [MIT license](./LICENSE).
+The contents of this repository are licensed under the [MIT license](./LICENSE).
 
 ## Unsupported
 

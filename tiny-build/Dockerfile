@@ -6,7 +6,7 @@ FROM hashicorp/terraform:light AS terraform
 FROM hashicorp/packer:light AS packer
 FROM prom/prometheus:v2.5.0 AS prometheus
 
-FROM alpine:3.7 AS build
+FROM alpine:3.8 AS build
 
 RUN apk add --no-cache \
     make \

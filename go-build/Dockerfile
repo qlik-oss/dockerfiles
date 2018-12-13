@@ -1,6 +1,13 @@
-FROM golang:1.11-alpine
+FROM hairyhenderson/gomplate:v3.0.0-slim AS gomplate
+FROM docker:18.06 AS docker
+FROM docker/compose:1.23.1 AS compose
+FROM vault:0.11.4 AS vault
+FROM hashicorp/terraform:light AS terraform
+FROM hashicorp/packer:light AS packer
+FROM prom/prometheus:v2.5.0 AS prometheus
 
-ENV GLIBC=2.27-r0
+FROM alpine:3.8 AS packages
+
 RUN apk add --no-cache \
     zip \
     unzip \
@@ -17,25 +24,38 @@ RUN apk add --no-cache \
     openssh-client \
     openssl \
     libgcc
+
+ENV GLIBC=2.28-r0
+
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+
 RUN pip install awscli
 
-RUN go get -u github.com/golang/dep/cmd/dep
-RUN go get -u github.com/jstemmer/go-junit-report
-RUN go get -u github.com/alecthomas/gometalinter \
-  && gometalinter --install
-
-COPY --from=hairyhenderson/gomplate:v2.4.0-slim /gomplate /bin/gomplate
-COPY --from=docker:17.12 /usr/local/bin/docker /bin/docker
-COPY --from=vault:0.9.5 /bin/vault /bin/vault
-COPY --from=hashicorp/terraform:light /bin/terraform /bin/terraform
-COPY --from=hashicorp/packer:light /bin/packer /bin/packer
-COPY --from=prom/prometheus:v2.2.0 /bin/promtool /bin/promtool
-
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-  && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
+RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \
   && rm glibc-$GLIBC.apk \
   && ln -s /lib/libz.so.1 /usr/glibc-compat/lib \
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
-COPY --from=docker/compose:1.21.0 /usr/local/bin/docker-compose /bin/docker-compose
+
+FROM golang:1.11-alpine AS gopackages
+
+RUN apk add --no-cache git
+RUN go get -u github.com/golang/dep/cmd/dep
+RUN go get -u github.com/jstemmer/go-junit-report
+RUN go get -u github.com/alecthomas/gometalinter \
+  && gometalinter --install
+
+FROM golang:1.11-alpine AS build
+
+COPY --from=gomplate /gomplate /bin/gomplate
+COPY --from=docker /usr/local/bin/docker /bin/docker
+COPY --from=vault /bin/vault /bin/vault
+COPY --from=terraform /bin/terraform /bin/terraform
+COPY --from=packer /bin/packer /bin/packer
+COPY --from=prometheus /bin/promtool /bin/promtool
+
+COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
+
+COPY --from=packages / /
+COPY --from=gopackages /go /go

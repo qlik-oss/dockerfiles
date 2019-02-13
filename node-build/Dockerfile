@@ -1,9 +1,9 @@
-FROM hairyhenderson/gomplate:v3.1.0-slim AS gomplate
-FROM docker:18.09 AS docker
+FROM hairyhenderson/gomplate:v3.2.0-slim AS gomplate
+FROM docker:18.09.2 AS docker
 FROM docker/compose:1.23.2 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:light AS terraform
-FROM hashicorp/packer:light AS packer
+FROM hashicorp/terraform:0.11.11 AS terraform
+FROM hashicorp/packer:1.3.4 AS packer
 FROM prom/prometheus:v2.7.1 AS prometheus
 
 FROM alpine:3.8 AS packages

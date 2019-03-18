@@ -29,7 +29,9 @@ ENV GLIBC=2.28-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
-RUN pip install awscli
+COPY awscli-requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+RUN rm requirements.txt
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \
@@ -40,13 +42,9 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 
 FROM python:3-alpine3.8 AS pypackages
 
-RUN pip install \
-  boto3 \
-  placebo \
-  pylint \
-  python-jose \
-  requests \
-  prometheus_client
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+RUN rm requirements.txt
 
 FROM python:3-alpine3.8 AS build
 

@@ -4,7 +4,7 @@ FROM docker/compose:1.23.2 AS compose
 FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.11.11 AS terraform
 FROM hashicorp/packer:1.3.5 AS packer
-FROM prom/prometheus:v2.7.1 AS prometheus
+FROM prom/prometheus:v2.8.0 AS prometheus
 
 FROM alpine:3.8 AS packages
 

@@ -5,6 +5,7 @@ FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.11.13 AS terraform
 FROM hashicorp/packer:1.3.5 AS packer
 FROM prom/prometheus:v2.8.0 AS prometheus
+FROM mikefarah/yq:2.2.0 AS yq
 
 FROM alpine:3.8 AS packages
 
@@ -31,7 +32,7 @@ RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 
 COPY awscli-requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-RUN rm requirements.txt
+RUN rm -rf requirements.txt ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \

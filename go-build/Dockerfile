@@ -5,7 +5,7 @@ FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.11.13 AS terraform
 FROM hashicorp/packer:1.3.5 AS packer
 FROM prom/prometheus:v2.8.0 AS prometheus
-FROM mikefarah/yq:2.2.0 AS yq
+FROM mikefarah/yq:2.3.0 AS yq
 
 FROM alpine:3.8 AS packages
 

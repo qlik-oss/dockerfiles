@@ -56,7 +56,7 @@ COPY --from=vault /bin/vault /bin/vault
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY --from=packer /bin/packer /bin/packer
 COPY --from=prometheus /bin/promtool /bin/promtool
-
+COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 
 COPY --from=packages / /

@@ -10,4 +10,3 @@ RUN apk add --update ca-certificates \
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm 
 
-COPY . /

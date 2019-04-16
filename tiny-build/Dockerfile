@@ -5,6 +5,7 @@ FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.11.13 AS terraform
 FROM hashicorp/packer:1.3.5 AS packer
 FROM prom/prometheus:v2.8.1 AS prometheus
+FROM prom/alertmanager:v0.16.2 AS alertmanager
 FROM mikefarah/yq:2.3.0 AS yq
 
 FROM alpine:3.8 AS packages
@@ -39,6 +40,7 @@ COPY --from=vault /bin/vault /bin/vault
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY --from=packer /bin/packer /bin/packer
 COPY --from=prometheus /bin/promtool /bin/promtool
+COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 

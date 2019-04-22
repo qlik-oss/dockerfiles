@@ -7,7 +7,7 @@ FROM hashicorp/packer:1.3.5 AS packer
 FROM prom/prometheus:v2.9.1 AS prometheus
 FROM prom/alertmanager:v0.16.2 AS alertmanager
 FROM mikefarah/yq:2.3.0 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.14.0 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.14.1 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.13.1 AS helm
 
 FROM alpine:3.8 AS packages

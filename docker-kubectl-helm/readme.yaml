@@ -1,0 +1,4 @@
+name: docker-kubectl-helm
+description: |
+    This image is built to support running tests with kubernetes cluster in CircleCI. It provides utilities such as docker, kubectl
+    and helm. See the `Dockerfile` in this folder for details.

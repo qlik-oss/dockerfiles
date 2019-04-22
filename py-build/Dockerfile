@@ -7,6 +7,8 @@ FROM hashicorp/packer:1.3.5 AS packer
 FROM prom/prometheus:v2.9.1 AS prometheus
 FROM prom/alertmanager:v0.16.2 AS alertmanager
 FROM mikefarah/yq:2.3.0 AS yq
+FROM lachlanevenson/k8s-kubectl:v1.14.0 AS kubectl
+FROM lachlanevenson/k8s-helm:v2.13.1 AS helm
 
 FROM alpine:3.8 AS packages
 
@@ -59,6 +61,8 @@ COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
+COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm 
 
 COPY --from=packages / /
 COPY --from=pypackages / /

@@ -1,0 +1,8 @@
+[Unit]
+Description=DIND network setup
+
+[Service]
+ExecStart=/usr/local/bin/dindnet
+
+[Install]
+WantedBy=docker.service

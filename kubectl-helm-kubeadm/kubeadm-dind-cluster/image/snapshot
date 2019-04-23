@@ -1,0 +1,168 @@
+#!/bin/bash
+# Copyright 2017 Mirantis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+
+function snapshot::retry {
+  # based on retry function in hack/jenkins/ scripts in k8s source
+  for i in {1..10}; do
+    "$@" && return 0 || sleep ${i}
+  done
+  "$@"
+}
+
+function snapshot::clean-containerd {
+  if [[ ${DIND_CRI} != containerd ]]; then
+    return
+  fi
+  crictl="crictl -r unix:///var/run/containerd/containerd.sock"
+  # first, we need to stop the containers
+  ${crictl} ps -q   | xargs -r ${crictl} stop -t 0
+  # then we remove the containers
+  ${crictl} ps -qa  | xargs -r ${crictl} rm
+  # then we stop the pod sandboxes
+  ${crictl} pods -q | xargs -r ${crictl} stopp
+  # and then we remove the pod sandboxes
+  ${crictl} pods -q | xargs -r ${crictl} rmp
+  systemctl stop containerd
+}
+
+function snapshot::text_join {
+  local IFS="$1"; shift; echo "$*"
+}
+
+function snapshot::is-service-running {
+  kubectl get pods -n kube-system -o name | egrep -q "^pods*/($(snapshot::text_join '|' ${@/%/-}))"
+}
+
+function snapshot::scale-down-service {
+  local service
+  for service in "$@"; do
+    if snapshot::is-service-running ${service} ; then
+      snapshot::retry kubectl scale deployment --replicas=0 -n kube-system ${service}
+    else
+      echo "${service} not found, skip it"
+    fi
+  done
+
+  local n=80
+  while snapshot::is-service-running $@; do
+    if ((--n == 0)); then
+      echo "WARNING: controller manager glitch: $(snapshot::text_join '&' $@) won't stop; pods may 'blink' for some time after restore" >&2
+      systemctl stop kubelet docker
+      snapshot::clean-containerd
+      return
+    fi
+    sleep 0.3
+  done
+}
+
+function snapshot::prepare {
+  if [[ -f /etc/kubernetes/manifests/kube-controller-manager.json || -f /etc/kubernetes/manifests/kube-controller-manager.yaml ]]; then
+    # remove kube-dns and kube-dashboard pods to avoid 'blinking'
+    # FIXME: when using k8s 1.6 kube-dns pods stay in 'Terminating' state
+    # Possibly related: https://github.com/kubernetes/kubernetes/issues/42685
+
+    DNS_SERVICE="$(kubectl get deployment -n kube-system -l k8s-app=kube-dns -o name | cut -d / -f 2)"
+    snapshot::scale-down-service ${DNS_SERVICE} kubernetes-dashboard
+
+    mkdir /manifests.bak
+    # stop controller manager so it doesn't launch new proxy daemon pods
+    mv /etc/kubernetes/manifests/kube-controller-manager.* /manifests.bak/
+    n=100
+    while kubectl get pod kube-controller-manager-kube-master -n kube-system -o name 2>/dev/null | grep -q pods*/; do
+      if ((--n == 0)); then
+        echo "WARNING: kubelet glitch: kube-controller-manager won't stop; pods may 'blink' for some time after restore" >&2
+        break
+      fi
+      sleep 0.3
+    done
+
+    # delete proxy pods so they don't "blink" after cluster restart
+    snapshot::retry kubectl delete pod --now -l k8s-app=kube-proxy -n kube-system 2>/dev/null
+    n=40
+    while kubectl get pod -n kube-system -o name -l k8s-app=kube-proxy | grep -q '^pods*/'; do
+      if ((--n == 0)); then
+        echo "WARNING: cluster glitch: proxy pods aren't removed; pods may 'blink' for some time after restore" >&2
+        break
+      fi
+      sleep 0.3
+    done
+    snapshot::retry kubectl get pods -n kube-system
+    systemctl stop kubelet docker
+    snapshot::clean-containerd
+    # now it's safe to put back the manifest
+    mv /manifests.bak/* /etc/kubernetes/manifests/
+    rmdir /manifests.bak
+  else
+    systemctl stop kubelet docker
+    snapshot::clean-containerd
+  fi
+}
+
+function snapshot::save {
+  # the scripts expects output the output of 'docker diff' as input
+  grep -v '^D ' |
+    sed 's@^. /@@' |
+    egrep -v '^(tmp|var/log|etc/mtab|run/|var/lib/containerd)' |
+    while read path; do
+      # Here we only add dirs if they're empty, as non-empty dirs will
+      # be added automatically by tar
+      if [[ ! -d ${path} || -h ${path} || ! $(ls -A "${path}") ]]; then
+        echo "${path}"
+      fi
+    done |
+    tar -C / -cf /dind/snapshot.tar -T -
+  if [[ -f /var/run/kubernetes/kubelet-client.key ]]; then
+    tar -C / -cf /dind/var-run-kubernetes.tar var/run/kubernetes
+  fi
+
+  systemctl start kubelet docker
+}
+
+function snapshot::restore {
+  tar -C / -xf /dind/snapshot.tar
+  if [[ -f /dind/var-run-kubernetes.tar ]]; then
+    tar -C / -xf /dind/var-run-kubernetes.tar
+  fi
+  if [[ ${1:-} = "-u" ]]; then
+    wrapkubeadm ensure-binaries
+  fi
+  start_services docker kubelet
+}
+
+case "${1:-}" in
+  prepare)
+    snapshot::prepare
+    ;;
+  save)
+    snapshot::save
+    ;;
+  restore)
+    snapshot::restore
+    ;;
+  update_and_restore)
+    snapshot::restore -u
+    ;;
+  *)
+    echo "usage:" >&2
+    echo "  $0 save" >&2
+    echo "  $0 restore" >&2
+    exit 1
+    ;;
+esac

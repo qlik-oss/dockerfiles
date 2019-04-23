@@ -1,0 +1,4 @@
+name: kubectl-helm-kubeadmin
+description: |
+    This folder provides two images. The first image based on qlik/docker-kubectl-helm, is built to support creating a kubeadmin dind cluster in docker host. It also provides utilities such as docker, kubectl
+    and helm. The second image is a custom image of kubeadmin-dind-cluster node with nfs server support. It can be built by See the `README.md` in kubeadmin-dind-cluster folder for details.

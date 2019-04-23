@@ -1,0 +1,781 @@
+# Use build/update-build-matrix.sh to update test cases & workflows
+# in this file (after "#cut here#" mark below)
+
+defaults: &defaults
+  docker:
+  - image: ubuntu:16.04
+  working_directory: ~/kubeadm-dind-cluster
+
+prereqs: &prereqs
+  name: Install prerequisites
+  command: |
+    apt-get -qq update
+    apt-get install -qqy curl ca-certificates git bzip2
+
+prereqs_machine: &prereqs_machine
+  name: Install prerequisites
+  command: |
+    sudo apt-get -qq update
+    sudo apt-get install -qqy curl ca-certificates git
+
+env: &env
+  DOCKER_VERSION: "17.03.0-ce"
+  IMAGE_NAME: "mirantis/kubeadm-dind-cluster"
+  PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.kubeadm-dind-cluster
+  # prevent dind-cluster*.sh from trying to pull the image
+  # during the tests
+  DIND_SKIP_PULL: y
+  KUBE_RSYNC_PORT: 8730
+  STABLE_BRANCH: stable
+  STABLE_SRC_TAG: "v1.12"
+  PRIMARY_BRANCH: master
+  DIND_COMMIT: current
+  DOWNLOAD_KUBECTL: y
+  GITHUB_RELEASE_TOOL_URL: "https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2"
+  GITHUB_RELEASE_TOOL_SHA256: 3feae868828f57a24d1bb21a5f475de4a116df3063747e3290ad561b4292185c
+
+setup: &setup
+  name: Set up the environment
+  command: |
+    apt-get -qq update
+    apt-get install -y curl ca-certificates git liblz4-tool rsync socat tzdata
+    curl -sSL -o "/tmp/docker-${DOCKER_VERSION}.tgz" "https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz"
+    tar -xz -C /tmp -f "/tmp/docker-${DOCKER_VERSION}.tgz"
+    mv /tmp/docker/* /usr/bin
+    # Start port forwarder
+    "${PWD}/build/portforward.sh" start
+
+display_cluster_state: &display_cluster_state
+  command: |
+    DIND_ROOT="$PWD"
+
+    kubectl="kubectl"
+    if [[ ${K8S_SRC:-} ]]; then
+      cd kubernetes
+      kubectl="cluster/kubectl.sh"
+    fi
+
+    apiserver_port="$( "${DIND_ROOT}/dind-cluster.sh" apiserver-port )"
+    "${DIND_ROOT}/build/portforward.sh" -wait "$apiserver_port"
+
+    "${kubectl}" "--server=:${apiserver_port}" version
+    "${kubectl}" "--server=:${apiserver_port}" get all --all-namespaces -o wide
+    "${kubectl}" "--server=:${apiserver_port}" get nodes
+
+dump_cluster: &dump_cluster
+  command: |
+    mkdir -p /tmp/cluster_state
+    out="/tmp/cluster_state/dump-1.gz"
+    if [[ -f ${out} ]]; then
+      out="/tmp/cluster_state/dump-2.gz"
+    fi
+    if [[ ${K8S_SRC:-} ]]; then
+      cd kubernetes
+      ../dind-cluster.sh dump | gzip >"${out}"
+    else
+      ./dind-cluster.sh dump | gzip >"${out}"
+    fi
+
+test: &test
+  steps:
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Bring up the cluster
+        command: |
+          export DIND_PORT_FORWARDER_WAIT=1
+          export DIND_PORT_FORWARDER="${PWD}/build/portforward.sh"
+          ./dind-cluster.sh up
+    - run:
+        name: Display cluster status (1)
+        <<: *display_cluster_state
+    - run:
+        name: Dump cluster state (1)
+        when: always
+        <<: *dump_cluster
+    - run:
+        name: Bring up the cluster (again)
+        command: |
+          export DIND_PORT_FORWARDER_WAIT=1
+          export DIND_PORT_FORWARDER="${PWD}/build/portforward.sh"
+          ./dind-cluster.sh up
+    - run:
+        name: Display cluster status (2)
+        <<: *display_cluster_state
+    - run:
+        name: Dump cluster state (2)
+        when: always
+        <<: *dump_cluster
+    - store_artifacts:
+        path: /tmp/cluster_state
+    - run:
+        name: Bring down the cluster
+        command: |
+          ./dind-cluster.sh down
+    - run:
+        name: Clean the cluster
+        command: |
+          ./dind-cluster.sh clean
+
+test_src: &test_src
+  steps:
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Check out Kubernetes source
+        command: |
+          git clone https://github.com/kubernetes/kubernetes.git
+          cd kubernetes
+          if [[ ${K8S_SRC_VERSION:-} ]]; then
+            git checkout "${K8S_SRC_VERSION}"
+          fi
+          echo
+          echo "*** Latest commit:"
+          git --no-pager log -1
+    - run:
+        name: Bring up the cluster
+        no_output_timeout: 35m
+        command: |
+          export DIND_PORT_FORWARDER_WAIT=1
+          export DIND_PORT_FORWARDER="${PWD}/build/portforward.sh"
+          "${PWD}/build/portforward.sh" 8730
+          cd kubernetes
+          ../dind-cluster.sh up
+    - run:
+        name: Display cluster status (1)
+        <<: *display_cluster_state
+    - run:
+        name: Dump cluster state (1)
+        when: always
+        <<: *dump_cluster
+    - run:
+        name: Bring up the cluster (again)
+        command: |
+          export DIND_PORT_FORWARDER_WAIT=1
+          export DIND_PORT_FORWARDER="${PWD}/build/portforward.sh"
+          "${PWD}/build/portforward.sh" 8730
+          cd kubernetes
+          ../dind-cluster.sh up
+    - run:
+        name: Run some e2e tests
+        no_output_timeout: 25m
+        command: |
+          export DIND_PORT_FORWARDER_WAIT=1
+          export DIND_PORT_FORWARDER="${PWD}/build/portforward.sh"
+          "${PWD}/build/portforward.sh" 8730
+          cd kubernetes
+          ../dind-cluster.sh e2e "existing RC"
+    - run:
+        name: Display cluster status (2)
+        <<: *display_cluster_state
+    - run:
+        name: Dump cluster state (2)
+        when: always
+        <<: *dump_cluster
+    - store_artifacts:
+        path: /tmp/cluster_state
+    - run:
+        name: Bring down the cluster
+        command: |
+          cd kubernetes
+          ../dind-cluster.sh down
+    - run:
+        name: Clean the cluster
+        command: |
+          cd kubernetes
+          ../dind-cluster.sh clean
+
+test_ipv6_only: &test_ipv6_only
+  machine: true
+  working_directory: ~/kubeadm-dind-cluster
+  steps:
+    - run:
+        <<: *prereqs_machine
+    - checkout
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Run IPv6 connectivity tests
+        no_output_timeout: 25m
+        command: |
+          "${PWD}/test/test-net-connectivity.sh"
+
+test_dual_stack: &test_dual_stack
+  machine: true
+  working_directory: ~/kubeadm-dind-cluster
+  steps:
+    - run:
+        <<: *prereqs_machine
+    - checkout
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Run dual stack connectivity tests
+        no_output_timeout: 25m
+        command: |
+          export IP_MODE=dual-stack
+          "${PWD}/test/test-net-connectivity.sh"
+
+test_ipv4_only: &test_ipv4_only
+  machine: true
+  working_directory: ~/kubeadm-dind-cluster
+  steps:
+    - run:
+        <<: *prereqs_machine
+    - checkout
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Run IPv4 connectivity tests
+        no_output_timeout: 25m
+        command: |
+          export IP_MODE=ipv4
+          "${PWD}/test/test-net-connectivity.sh"
+
+test_multiple_clusters: &test_multiple_clusters
+  steps:
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Bring up multiple clusters in parallel
+        no_output_timeout: 35m
+        command: |
+          "${PWD}/test/test-multiple-clusters.sh"
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    environment:
+      <<: *env
+    steps:
+    - run:
+        name: "Install prerequisites (FIXME: rm this)"
+        command: |
+          apt-get -qq update
+          apt-get install -y curl ca-certificates git
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - run:
+        name: Build images
+        command: |
+          build/build-all.sh _save
+    - persist_to_workspace:
+        root: _save
+        paths:
+        - images.tar
+
+  test_src_release:
+    <<: *defaults
+    environment:
+      <<: *env
+      BUILD_KUBEADM: y
+      BUILD_HYPERKUBE: y
+      K8S_SRC: y
+      K8S_SRC_VERSION: release-1.11
+    <<: *test_src
+
+  test_src_master:
+    <<: *defaults
+    environment:
+      <<: *env
+      BUILD_KUBEADM: y
+      BUILD_HYPERKUBE: y
+      K8S_SRC: y
+    <<: *test_src
+
+  release:
+    <<: *defaults
+    environment:
+      <<: *env
+    steps:
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Install github-release
+        command: |
+          curl -sSL -o /tmp/gh-release.tar.bz2 "${GITHUB_RELEASE_TOOL_URL}"
+          echo "${GITHUB_RELEASE_TOOL_SHA256}  /tmp/gh-release.tar.bz2" | sha256sum -c -
+          tar --strip-components=3 -C /usr/local/bin -xvjf /tmp/gh-release.tar.bz2
+    - run:
+        name: Perform the release
+        command: |
+          if [[ ! ${CIRCLE_TAG} ]]; then
+            echo >&2 "*** No CIRCLE_TAG"
+            exit 1
+          fi
+          build/genfixed.sh
+          build/release.sh "${CIRCLE_TAG}"
+
+  push:
+    <<: *defaults
+    environment:
+      <<: *env
+    steps:
+    - run:
+        <<: *prereqs
+    - checkout
+    - setup_remote_docker
+    - run:
+        <<: *setup
+    - attach_workspace:
+        at: _save
+    - run:
+        name: Restore images
+        command: |
+          docker load -i _save/images.tar
+    - run:
+        name: Push images
+        command: |
+          if [[ ! ${DOCKER_USER:-} || ! ${DOCKER_PASS} ]]; then
+            echo >&2 "*** WARNING: can't push images for outside forks"
+            exit 0
+          fi
+          docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+          docker images \
+                 --format '{{ .Repository }}:{{ .Tag }}' \
+                 --filter=label=mirantis.kubeadm_dind_cluster_final |
+              while read image; do
+            echo >&2 "*** Pushing: ${image}"
+            docker push "${image}"
+          done
+
+# Don't remove the "#cut here#" marker below.
+#cut here#
+
+  test_v1.10_bridge_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.10
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_v1.10_bridge_containerd:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.10
+      CNI_PLUGIN: bridge
+      DIND_CRI: containerd
+
+  test_v1.11_bridge_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.11
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_v1.11_bridge_containerd:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.11
+      CNI_PLUGIN: bridge
+      DIND_CRI: containerd
+
+  test_v1.11_kube-router_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.11
+      CNI_PLUGIN: kube-router
+      DIND_CRI: docker
+
+  test_v1.12_bridge_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.12
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_v1.12_bridge_containerd:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.12
+      CNI_PLUGIN: bridge
+      DIND_CRI: containerd
+
+  test_v1.13_bridge_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_v1.13_flannel_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: flannel
+      DIND_CRI: docker
+
+  test_v1.13_calico_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: calico
+      DIND_CRI: docker
+
+  test_v1.13_calico-kdd_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: calico-kdd
+      DIND_CRI: docker
+
+  test_v1.13_weave_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: weave
+      DIND_CRI: docker
+
+  test_v1.13_bridge_containerd:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: containerd
+
+  test_v1.13_ptp_docker:
+    <<: *defaults
+    <<: *test
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: ptp
+      DIND_CRI: docker
+
+  test_multiple_clusters_v1.13_bridge_docker:
+    <<: *defaults
+    <<: *test_multiple_clusters
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_ipv4_only_v1.13_bridge_docker:
+    <<: *test_ipv4_only
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_ipv6_only_v1.13_bridge_docker:
+    <<: *test_ipv6_only
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+
+  test_ipv6_only_nat64_v1.13_bridge_docker:
+    <<: *test_ipv6_only
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+      NAT64_V4_SUBNET_PREFIX: '10.100'
+
+  test_ipv6_only_ext_aaaa_v1.13_bridge_docker:
+    <<: *test_ipv6_only
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+      DIND_ALLOW_AAAA_USE: 'true'
+
+  test_dual_stack_v4_svc_net_v1.13_bridge_docker:
+    <<: *test_dual_stack
+    environment:
+      <<: *env
+      DIND_K8S_VERSION: v1.13
+      CNI_PLUGIN: bridge
+      DIND_CRI: docker
+      SERVICE_CIDR: '10.96.0.0/12'
+      DIND_ALLOW_AAAA_USE: 'true'
+
+workflows:
+  version: 2
+  build-test-push:
+    jobs:
+    - build:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+    - push:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.10_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.10_bridge_containerd:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.11_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.11_bridge_containerd:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.11_kube-router_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.12_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.12_bridge_containerd:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_flannel_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_calico_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_calico-kdd_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_weave_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_bridge_containerd:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_v1.13_ptp_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_multiple_clusters_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_ipv4_only_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_ipv6_only_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_ipv6_only_nat64_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_ipv6_only_ext_aaaa_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_dual_stack_v4_svc_net_v1.13_bridge_docker:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_src_release:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - test_src_master:
+        filters:
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - build
+    - release:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only:
+              - /^v[0-9].*/
+        requires:
+        - push
+        - test_v1.10_bridge_docker
+        - test_v1.10_bridge_containerd
+        - test_v1.11_bridge_docker
+        - test_v1.11_bridge_containerd
+        - test_v1.11_kube-router_docker
+        - test_v1.12_bridge_docker
+        - test_v1.12_bridge_containerd
+        - test_v1.13_bridge_docker
+        - test_v1.13_flannel_docker
+        - test_v1.13_calico_docker
+        - test_v1.13_calico-kdd_docker
+        - test_v1.13_weave_docker
+        - test_v1.13_bridge_containerd
+        - test_v1.13_ptp_docker
+        - test_multiple_clusters_v1.13_bridge_docker
+        - test_ipv4_only_v1.13_bridge_docker
+        - test_ipv6_only_v1.13_bridge_docker
+        - test_ipv6_only_nat64_v1.13_bridge_docker
+        - test_ipv6_only_ext_aaaa_v1.13_bridge_docker
+        - test_dual_stack_v4_svc_net_v1.13_bridge_docker
+        - test_src_release
+        - test_src_master

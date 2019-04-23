@@ -16,6 +16,7 @@ ARG KUBECTL_LINUX_SHA1
 ARG KUBECTL_DARWIN_URL
 ARG KUBECTL_DARWIN_SHA1
 
+#Add nfs-common lib to support nfs persistence provider
 RUN apt-get update && apt-get -y install nfs-common
 
 RUN if [ -n "${KUBEADM_URL}" ]; then \

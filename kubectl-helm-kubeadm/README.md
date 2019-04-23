@@ -1,8 +1,10 @@
 # qlik/kubectl-helm-kubeadmin
 
-This image based on qlik/docker-kubectl-helm, is built to support creating a kubeadmin dind cluster in docker host. It also provides utilities such as docker, kubectl
-and helm. See the `Dockerfile` in this folder for details.
+This folder provides two images: qlik/kubectl-helm-kubeadmin and qlik/kubeadmin-dind-cluster.
 
+qlik/kubectl-helm-kubeadmin is based on qlik/docker-kubectl-helm. It is built to support creating a kubeadmin dind cluster in docker host. It also provides utilities such as docker, kubectl and helm.
+
+qlik/kubeadmin-dind-cluster is a custom image of kubeadmin-dind-cluster with nfs server support. It can be built by ./build-kubeadm-dind-cluster-with-nfs.sh
 ## Third-Party Licenses
 
 See the git repository for the source code information: https://github.com/qlik-oss/dockerfiles/blob/master/LICENSE

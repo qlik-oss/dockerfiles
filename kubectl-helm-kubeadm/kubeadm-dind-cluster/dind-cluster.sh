@@ -483,9 +483,7 @@ for pod_cidr in "${pod_net_cidrs[@]}"; do
   fi
 done
 
-DIND_IMAGE_BASE="${DIND_IMAGE_BASE:-mirantis/kubeadm-dind-cluster}"
-
-# comment out the code to use the DIND_IMAGE specified environment variable only
+# DIND_IMAGE_BASE="${DIND_IMAGE_BASE:-mirantis/kubeadm-dind-cluster}"
 # if [[ ${DIND_COMMIT:-} ]]; then
 #   if [[ ${DIND_COMMIT} = current ]]; then
 #     DIND_COMMIT="$(cd "${DIND_ROOT}"; git rev-parse HEAD)"
@@ -499,8 +497,7 @@ DIND_IMAGE_BASE="${DIND_IMAGE_BASE:-mirantis/kubeadm-dind-cluster}"
 #   DIND_IMAGE="${DIND_IMAGE}@${DIND_IMAGE_DIGEST}"
 # fi
 
-echo "Using DIND_IMAGE: ${DIND_IMAGE}"
-# DIND_IMAGE="${DIND_IMAGE_BASE}:local"
+echo "Using DIND_IMAGE: $DIND_IMAGE ..."
 
 BUILD_KUBEADM="${BUILD_KUBEADM:-}"
 BUILD_HYPERKUBE="${BUILD_HYPERKUBE:-}"

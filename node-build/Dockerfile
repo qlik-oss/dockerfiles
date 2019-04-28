@@ -3,7 +3,7 @@ FROM docker:18.09.5 AS docker
 FROM docker/compose:1.24.0 AS compose
 FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.11.13 AS terraform
-FROM hashicorp/packer:1.3.5 AS packer
+FROM hashicorp/packer:1.4.0 AS packer
 FROM prom/prometheus:v2.9.1 AS prometheus
 FROM prom/alertmanager:v0.16.2 AS alertmanager
 FROM mikefarah/yq:2.3.0 AS yq

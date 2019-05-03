@@ -12,7 +12,3 @@ description: |
 
     where the dot is the current folder, assuming you are running the docker command from the same folder of the Dockerfile.
 
-    ## License
-
-    This image packages [curl](https://github.com/curl/curl), which is licensed under a [Mixed License](https://curl.haxx.se/legal/licmix.html).
-    `libcurl` itself is distributed as [MIT License](https://curl.haxx.se/docs/copyright.html).

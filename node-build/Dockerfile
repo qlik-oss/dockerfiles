@@ -44,14 +44,14 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM node:8-alpine AS nodepackages
+FROM node:10-alpine AS nodepackages
 
 RUN npm install -g \
   mocha \
   serverless \
   yarn
 
-FROM node:8-alpine AS build
+FROM node:10-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

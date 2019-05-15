@@ -1,15 +1,63 @@
 version: 2.1
 
 jobs:
-  build:
+  build-socat:
     docker:
-      - image: qlik/tiny-build
+      - image: docker:18.09
+    environment:
+      DOCKER_BUILDKIT: "1"
     steps:
       - checkout
       - setup_remote_docker:
-          version: 18.06.0-ce
-      - run: docker build -f socat/Dockerfile socat/
-      - run: docker build -f tiny-build/Dockerfile tiny-build/
-      - run: docker build -f go-build/Dockerfile go-build/
-      - run: docker build -f node-build/Dockerfile node-build/
-      - run: docker build -f py-build/Dockerfile py-build/
+          version: 18.09.3
+      - run: docker build --progress plain -f socat/Dockerfile socat/
+  build-tiny:
+    docker:
+      - image: docker:18.09
+    environment:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09.3
+      - run: docker build --progress plain -f tiny-build/Dockerfile tiny-build/
+  build-go:
+    docker:
+      - image: docker:18.09
+    environment:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09.3
+      - run: docker build --progress plain -f go-build/Dockerfile go-build/
+  build-node:
+    docker:
+      - image: docker:18.09
+    environment:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09.3
+
+      - run: docker build --progress plain -f node-build/Dockerfile node-build/
+  build-py:
+    docker:
+      - image: docker:18.09
+    environment:
+      DOCKER_BUILDKIT: "1"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.09.3
+      - run: docker build --progress plain -f py-build/Dockerfile py-build/
+
+workflows:
+  docker-build:
+    jobs:
+      - build-socat
+      - build-tiny
+      - build-go
+      - build-node
+      - build-py

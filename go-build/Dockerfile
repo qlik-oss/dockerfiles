@@ -2,7 +2,7 @@ FROM hairyhenderson/gomplate:v3.4.0-slim AS gomplate
 FROM docker:18.09.6 AS docker
 FROM docker/compose:1.24.0 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.11.14 AS terraform
+FROM hashicorp/terraform:0.12.0 AS terraform
 FROM hashicorp/packer:1.4.1 AS packer
 FROM prom/prometheus:v2.9.2 AS prometheus
 FROM prom/alertmanager:v0.17.0 AS alertmanager

@@ -4,7 +4,7 @@ botocore==1.12.118
 certifi==2019.6.16
 chardet==3.0.4
 docutils==0.14
-ecdsa==0.13
+ecdsa==0.13.2
 future==0.17.1
 idna==2.8
 isort==4.3.15

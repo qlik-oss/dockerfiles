@@ -5,7 +5,7 @@ FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.12.3 AS terraform
 FROM hashicorp/packer:1.4.2 AS packer
 FROM prom/prometheus:v2.11.0 AS prometheus
-FROM prom/alertmanager:v0.17.0 AS alertmanager
+FROM prom/alertmanager:v0.18.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.14.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.1 AS helm

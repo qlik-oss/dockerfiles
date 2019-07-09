@@ -10,7 +10,7 @@ FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.14.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.1 AS helm
 
-FROM alpine:3.8 AS packages
+FROM alpine:3.10 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -34,7 +34,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM alpine:3.8 AS build
+FROM alpine:3.10 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

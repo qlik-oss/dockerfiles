@@ -10,7 +10,7 @@ FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.14.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.1 AS helm
 
-FROM alpine:3.8 AS packages
+FROM alpine:3.10 AS packages
 
 RUN apk add --no-cache \
     zip \

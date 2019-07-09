@@ -1,6 +1,7 @@
 {
   "extends": [
-    "config:base"
+    "qlik-oss",
+    "qlik-oss:groupMinorPatch"
   ],
   "pip_requirements": {
     "fileMatch": [".*-requirements.txt"]

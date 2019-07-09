@@ -47,6 +47,8 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 FROM python:3-alpine3.8 AS pypackages
 
 COPY requirements.txt .
+# Hack to workaround astroid->typed_ast dependency on gcc
+RUN python -c 'import sys; f = open("/usr/local/lib/python3.7/site-packages/_manylinux.py", "w"); f.write("manylinux1_compatible = True"); f.close()'
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 

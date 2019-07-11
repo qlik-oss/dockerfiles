@@ -17,7 +17,8 @@ RUN apk add --no-cache \
     git \
     libgcc \
     python \
-    py2-pip
+    py2-pip \
+    bash
 
 ENV GLIBC=2.28-r0
 
@@ -33,6 +34,12 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libz.so.1 /usr/glibc-compat/lib \
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
+ 
+ RUN mkdir hub && \
+    wget https://github.com/github/hub/releases/download/v2.12.2/hub-linux-amd64-2.12.2.tgz -O- | \
+    tar xz --strip-components 1 --directory hub \
+    && ./hub/install \
+    && rm -r hub
 
 FROM alpine:3.8 AS build
 

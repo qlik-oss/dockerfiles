@@ -44,6 +44,11 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
+RUN mkdir hub && \
+    wget https://github.com/github/hub/releases/download/v2.12.2/hub-linux-amd64-2.12.2.tgz -O- | \
+    tar xz --strip-components 1 --directory hub && \
+    ./hub/install && rm -r hub
+
 FROM golang:1.12-alpine AS gopackages
 
 RUN apk add --no-cache git

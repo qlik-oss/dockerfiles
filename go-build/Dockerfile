@@ -46,7 +46,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 
 RUN mkdir hub && \
     wget https://github.com/github/hub/releases/download/v2.12.2/hub-linux-amd64-2.12.2.tgz -O- | \
-    tar xz --strip-components 1 --directory hub 
+    tar xz --strip-components 1 --directory hub \
     && ./hub/install \
     && rm -r hub
 

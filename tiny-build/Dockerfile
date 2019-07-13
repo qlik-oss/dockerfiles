@@ -2,15 +2,15 @@ FROM hairyhenderson/gomplate:v3.5.0-slim AS gomplate
 FROM docker:18.09.7 AS docker
 FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.3 AS terraform
+FROM hashicorp/terraform:0.12.4 AS terraform
 FROM hashicorp/packer:1.4.2 AS packer
-FROM prom/prometheus:v2.11.0 AS prometheus
-FROM prom/alertmanager:v0.17.0 AS alertmanager
+FROM prom/prometheus:v2.11.1 AS prometheus
+FROM prom/alertmanager:v0.18.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.14.2 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.14.1 AS helm
+FROM lachlanevenson/k8s-kubectl:v1.15.0 AS kubectl
+FROM lachlanevenson/k8s-helm:v2.14.2 AS helm
 
-FROM alpine:3.8 AS packages
+FROM alpine:3.10 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -41,7 +41,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
     && ./hub/install \
     && rm -r hub
 
-FROM alpine:3.8 AS build
+FROM alpine:3.10 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

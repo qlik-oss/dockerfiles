@@ -33,7 +33,8 @@ RUN apk add --no-cache \
     py2-pip \
     openssh-client \
     openssl \
-    libgcc
+    libgcc \
+    build-base
 
 ENV GLIBC=2.28-r0
 

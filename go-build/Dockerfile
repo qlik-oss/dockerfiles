@@ -9,6 +9,12 @@ FROM prom/alertmanager:v0.18.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.15.1 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.2 AS helm
+FROM golangci/golangci-lint:v1.17 AS golangci-lint
+
+FROM alpine:3.10 AS cc-test-reporter
+
+RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+RUN chmod +x /bin/cc-test-reporter
 
 FROM alpine:3.10 AS packages
 
@@ -65,6 +71,8 @@ COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm 
+COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
+COPY --from=golangci-lint /usr/bin/golangci-lint /bin/
 
 COPY --from=packages / /
 COPY --from=gopackages /go /go

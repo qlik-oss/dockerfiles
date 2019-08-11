@@ -7,7 +7,7 @@ FROM hashicorp/packer:1.4.2 AS packer
 FROM prom/prometheus:v2.11.1 AS prometheus
 FROM prom/alertmanager:v0.18.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.15.1 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.15.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.3 AS helm
 FROM golangci/golangci-lint:v1.17 AS golangci-lint
 

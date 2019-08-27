@@ -10,12 +10,12 @@ FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.15.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.3 AS helm
 
-FROM alpine:3.10 AS cc-test-reporter
+FROM alpine:3.8 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.10 AS packages
+FROM alpine:3.8 AS packages
 
 RUN apk add --no-cache \
     zip \

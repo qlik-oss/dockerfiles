@@ -74,3 +74,5 @@ COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 
 COPY --from=packages / /
 COPY --from=pypackages / /
+
+RUN ssh -V

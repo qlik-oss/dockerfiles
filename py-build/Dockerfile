@@ -49,7 +49,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM python:3-alpine3.8 AS pypackages
+FROM python:3-alpine3.10 AS pypackages
 
 COPY requirements.txt .
 # Hack to workaround astroid->typed_ast dependency on gcc
@@ -57,7 +57,7 @@ RUN python -c 'import sys; f = open("/usr/local/lib/python3.7/site-packages/_man
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 
-FROM python:3-alpine3.8 AS build
+FROM python:3-alpine3.10 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

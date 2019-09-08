@@ -1,11 +1,11 @@
 FROM hairyhenderson/gomplate:v3.5.0-slim AS gomplate
-FROM docker:18.09.8 AS docker
+FROM docker:18.09.9 AS docker
 FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.7 AS terraform
+FROM hashicorp/terraform:0.12.8 AS terraform
 FROM hashicorp/packer:1.4.3 AS packer
 FROM prom/prometheus:v2.12.0 AS prometheus
-FROM prom/alertmanager:v0.18.0 AS alertmanager
+FROM prom/alertmanager:v0.19.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.15.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.14.3 AS helm
@@ -51,7 +51,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM golang:1.12-alpine AS gopackages
+FROM golang:1.13-alpine AS gopackages
 
 RUN apk add --no-cache git
 RUN go get -u github.com/golang/dep/cmd/dep
@@ -59,7 +59,7 @@ RUN go get -u github.com/jstemmer/go-junit-report
 RUN go get -u github.com/alecthomas/gometalinter \
   && gometalinter --install
 
-FROM golang:1.12-alpine AS build
+FROM golang:1.13-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

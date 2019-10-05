@@ -4,7 +4,7 @@ FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.12.9 AS terraform
 FROM hashicorp/packer:1.4.3 AS packer
-FROM prom/prometheus:v2.12.0 AS prometheus
+FROM prom/prometheus:v2.13.0 AS prometheus
 FROM prom/alertmanager:v0.19.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.16.0 AS kubectl

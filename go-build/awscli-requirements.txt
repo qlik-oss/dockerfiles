@@ -1,5 +1,5 @@
-awscli==1.16.248
-botocore==1.12.238
+awscli==1.16.253
+botocore==1.12.243
 colorama==0.4.1
 docutils==0.15.2
 jmespath==0.9.4

@@ -2,14 +2,14 @@ FROM hairyhenderson/gomplate:v3.5.0-slim AS gomplate
 FROM docker:18.09.9 AS docker
 FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.10 AS terraform
-FROM hashicorp/packer:1.4.3 AS packer
-FROM prom/prometheus:v2.13.0 AS prometheus
+FROM hashicorp/terraform:0.12.12 AS terraform
+FROM hashicorp/packer:1.4.4 AS packer
+FROM prom/prometheus:v2.13.1 AS prometheus
 FROM prom/alertmanager:v0.19.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.16.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.14.3 AS helm
-FROM golangci/golangci-lint:v1.20 AS golangci-lint
+FROM lachlanevenson/k8s-kubectl:v1.16.2 AS kubectl
+FROM lachlanevenson/k8s-helm:v2.15.2 AS helm
+FROM golangci/golangci-lint:v1.21 AS golangci-lint
 
 FROM alpine:3.10 AS cc-test-reporter
 

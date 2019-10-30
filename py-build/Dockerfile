@@ -2,13 +2,13 @@ FROM hairyhenderson/gomplate:v3.5.0-slim AS gomplate
 FROM docker:18.09.9 AS docker
 FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.10 AS terraform
-FROM hashicorp/packer:1.4.3 AS packer
-FROM prom/prometheus:v2.13.0 AS prometheus
+FROM hashicorp/terraform:0.12.12 AS terraform
+FROM hashicorp/packer:1.4.4 AS packer
+FROM prom/prometheus:v2.13.1 AS prometheus
 FROM prom/alertmanager:v0.19.0 AS alertmanager
 FROM mikefarah/yq:2.4.0 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.16.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.14.3 AS helm
+FROM lachlanevenson/k8s-kubectl:v1.16.2 AS kubectl
+FROM lachlanevenson/k8s-helm:v2.15.2 AS helm
 
 FROM alpine:3.10 AS cc-test-reporter
 
@@ -52,8 +52,6 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 FROM python:3-alpine3.10 AS pypackages
 
 COPY requirements.txt .
-# Hack to workaround astroid->typed_ast dependency on gcc
-RUN python -c 'import sys; f = open("/usr/local/lib/python3.7/site-packages/_manylinux.py", "w"); f.write("manylinux1_compatible = True"); f.close()'
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 

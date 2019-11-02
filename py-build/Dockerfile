@@ -2,11 +2,11 @@ FROM hairyhenderson/gomplate:v3.5.0-slim AS gomplate
 FROM docker:18.09.9 AS docker
 FROM docker/compose:1.24.1 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.12 AS terraform
+FROM hashicorp/terraform:0.12.13 AS terraform
 FROM hashicorp/packer:1.4.4 AS packer
 FROM prom/prometheus:v2.13.1 AS prometheus
 FROM prom/alertmanager:v0.19.0 AS alertmanager
-FROM mikefarah/yq:2.4.0 AS yq
+FROM mikefarah/yq:2.4.1 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.16.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.15.2 AS helm
 

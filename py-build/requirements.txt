@@ -15,7 +15,7 @@ placebo==0.9.0
 prometheus-client==0.7.1
 pyasn1==0.4.7
 pylint==2.4.3
-python-dateutil==2.8.0
+python-dateutil==2.8.1
 python-jose==3.0.1
 requests==2.22.0
 rsa==4.0

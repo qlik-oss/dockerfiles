@@ -10,12 +10,12 @@ FROM mikefarah/yq:2.4.1 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.16.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.1 AS helm
 
-FROM alpine:3.10 AS cc-test-reporter
+FROM alpine:3.10.3 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.10 AS packages
+FROM alpine:3.10.3 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -46,7 +46,7 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
-FROM alpine:3.10 AS build
+FROM alpine:3.10.3 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

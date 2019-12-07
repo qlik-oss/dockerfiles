@@ -1,11 +1,11 @@
-awscli==1.16.292
-botocore==1.13.28
-colorama==0.4.1
+awscli==1.16.298
+botocore==1.13.34
+colorama==0.4.3
 docutils==0.15.2
 jmespath==0.9.4
 pyasn1==0.4.8
 python-dateutil==2.8.1
-PyYAML==5.1.2
+PyYAML==5.2
 rsa==4.0
 s3transfer==0.2.1
 six==1.13.0

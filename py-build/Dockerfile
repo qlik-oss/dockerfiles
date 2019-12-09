@@ -49,13 +49,13 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM python:3.8.0b1-alpine3.10 AS pypackages
+FROM python:3.8.0-alpine3.10 AS pypackages
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
 
-FROM python:3.8.0b1-alpine3.10 AS build
+FROM python:3.8.0-alpine3.10 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

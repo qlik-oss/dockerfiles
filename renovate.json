@@ -5,5 +5,12 @@
   ],
   "pip_requirements": {
     "fileMatch": [".*-requirements.txt"]
-  }
+  },
+  "packageRules": [
+    {
+      "datasources": ["docker"],
+      "packageNames": ["python"],
+      "versionScheme": "pep440"
+    }
+  ]
 }

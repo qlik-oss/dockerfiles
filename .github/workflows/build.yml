@@ -1,0 +1,112 @@
+name: Docker Build
+on: [push]
+
+jobs:
+  docker-build-go-build:
+    name: docker build go-build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile go-build/image.iid -f go-build/Dockerfile go-build/
+    - name: tag
+      run: docker tag $(< go-build/image.iid) docker.pkg.github.com/${{ github.repository }}/go-build
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/go-build
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+  docker-build-gradle:
+    name: docker build gradle
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile gradle/image.iid -f gradle/Dockerfile gradle/
+    - name: tag
+      run: docker tag $(< gradle/image.iid) docker.pkg.github.com/${{ github.repository }}/gradle
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/gradle
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+  docker-build-node-build:
+    name: docker build node-build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile node-build/image.iid -f node-build/Dockerfile node-build/
+    - name: tag
+      run: docker tag $(< node-build/image.iid) docker.pkg.github.com/${{ github.repository }}/node-build
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/node-build
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+  docker-build-py-build:
+    name: docker build py-build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile py-build/image.iid -f py-build/Dockerfile py-build/
+    - name: tag
+      run: docker tag $(< py-build/image.iid) docker.pkg.github.com/${{ github.repository }}/py-build
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/py-build
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+  docker-build-socat:
+    name: docker build socat
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile socat/image.iid -f socat/Dockerfile socat/
+    - name: tag
+      run: docker tag $(< socat/image.iid) docker.pkg.github.com/${{ github.repository }}/socat
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/socat
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+  docker-build-tiny-build:
+    name: docker build tiny-build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: "1"
+    steps:
+    - name: docker version
+      run: docker version
+    - uses: actions/checkout@master
+    - name: build
+      run: docker build --progress plain --iidfile tiny-build/image.iid -f tiny-build/Dockerfile tiny-build/
+    - name: tag
+      run: docker tag $(< tiny-build/image.iid) docker.pkg.github.com/${{ github.repository }}/tiny-build
+    - name: login
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+    - name: docker push
+      run: docker push docker.pkg.github.com/${{ github.repository }}/tiny-build
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'

@@ -51,10 +51,10 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 
 FROM node:10.19.0-alpine AS nodepackages
 
+RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
-  serverless \
-  yarn
+  serverless
 
 FROM node:10.19.0-alpine AS build
 

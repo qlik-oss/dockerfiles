@@ -1,6 +1,6 @@
 astroid==2.3.3
-boto3==1.12.5
-botocore==1.15.5
+boto3==1.12.13
+botocore==1.15.13
 certifi==2019.11.28
 chardet==3.0.4
 docutils==0.16
@@ -8,7 +8,7 @@ ecdsa==0.15
 future==0.18.2
 idna==2.9
 isort==4.3.21
-jmespath==0.9.4
+jmespath==0.9.5
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
 placebo==0.9.0

@@ -9,7 +9,7 @@ FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.17.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.3 AS helm
-FROM golangci/golangci-lint:v1.23 AS golangci-lint
+FROM golangci/golangci-lint:v1.24 AS golangci-lint
 
 FROM alpine:3.11.3 AS cc-test-reporter
 

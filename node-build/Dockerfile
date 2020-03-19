@@ -9,6 +9,7 @@ FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.17.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.3 AS helm
+FROM lachlanevenson/k8s-helm:v3.1.2 AS helm3
 
 FROM alpine:3.11.3 AS cc-test-reporter
 
@@ -69,6 +70,7 @@ COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
+COPY --from=helm3 /usr/local/bin/helm /usr/local/bin/helm3
 COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 
 COPY --from=packages / /

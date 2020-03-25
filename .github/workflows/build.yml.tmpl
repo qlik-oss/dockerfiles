@@ -15,10 +15,17 @@ jobs:
     - name: build
       run: docker build --progress plain --iidfile {{ . }}/image.iid -f {{ . }}/Dockerfile {{ . }}/
     - name: tag
-      run: docker tag $(< {{ . }}/image.iid) docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+      run: |
+        docker tag $(< {{ . }}/image.iid) docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+        docker tag $(< {{ . }}/image.iid) qlik/{{ . }}
     - name: login
-      run: echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login docker.pkg.github.com --username {{ "${{ github.actor }}" }} --password-stdin
+      run: |
+        echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login docker.pkg.github.com --username {{ "${{ github.actor }}" }} --password-stdin
+        echo {{"${{ secrets.DOCKERHUB_PASSWORD }}"}} | docker login --username {{ "${{ secrets.DOCKERHUB_USERNAME }}" }} --password-stdin
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
-      run: docker push docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+      run: |
+        docker push docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+        docker push qlik/{{ . }}
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
 {{- end }}{{ end }}

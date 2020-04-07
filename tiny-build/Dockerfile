@@ -66,5 +66,6 @@ COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
+COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
 
 COPY --from=packages / /

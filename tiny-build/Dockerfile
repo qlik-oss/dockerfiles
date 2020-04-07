@@ -1,7 +1,7 @@
 FROM hairyhenderson/gomplate:v3.6.0-slim AS gomplate
 FROM docker:19.03.8 AS docker
 FROM docker/compose:1.25.4 AS compose
-FROM vault:0.11.6 AS vault
+FROM vault:1.3.4 AS vault
 FROM hashicorp/terraform:0.12.24 AS terraform
 FROM hashicorp/packer:1.5.5 AS packer
 FROM prom/prometheus:v2.17.1 AS prometheus
@@ -66,5 +66,6 @@ COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
+COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
 
 COPY --from=packages / /

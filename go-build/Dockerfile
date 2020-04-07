@@ -37,7 +37,7 @@ RUN apk add --no-cache \
     libgcc \
     build-base
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.31-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
@@ -52,7 +52,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM golang:1.13.9-alpine3.10 AS gopackages
+FROM golang:1.14.1-alpine3.11 AS gopackages
 
 RUN apk add --no-cache git
 RUN go get -u github.com/golang/dep/cmd/dep
@@ -60,7 +60,7 @@ RUN go get -u github.com/jstemmer/go-junit-report
 RUN go get -u github.com/alecthomas/gometalinter \
   && gometalinter --install
 
-FROM golang:1.13.9-alpine3.10 AS build
+FROM golang:1.14.1-alpine3.11 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

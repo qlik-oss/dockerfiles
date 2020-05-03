@@ -1,6 +1,6 @@
-astroid==2.3.3
-boto3==1.12.46
-botocore==1.15.46
+astroid==2.4.0
+boto3==1.13.1
+botocore==1.16.1
 certifi==2020.4.5.1
 chardet==3.0.4
 docutils==0.16
@@ -14,7 +14,7 @@ mccabe==0.6.1
 placebo==0.9.0
 prometheus-client==0.7.1
 pyasn1==0.4.8
-pylint==2.4.4
+pylint==2.5.0
 python-dateutil==2.8.1
 python-jose==3.1.0
 requests==2.23.0

@@ -10,6 +10,7 @@ FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.7 AS helm
 FROM lachlanevenson/k8s-helm:v3.2.0 AS helm3
+FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
 
 FROM alpine:3.11.6 AS cc-test-reporter
@@ -67,5 +68,6 @@ COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
 COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
+COPY --from=img /usr/bin/img /usr/bin/img
 
 COPY --from=packages / /

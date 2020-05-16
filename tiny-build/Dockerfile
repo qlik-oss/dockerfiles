@@ -2,14 +2,14 @@ FROM hairyhenderson/gomplate:v3.6.0-slim AS gomplate
 FROM docker:19.03.8 AS docker
 FROM docker/compose:1.25.5 AS compose
 FROM vault:1.4.1 AS vault
-FROM hashicorp/terraform:0.12.24 AS terraform
+FROM hashicorp/terraform:0.12.25 AS terraform
 FROM hashicorp/packer:1.5.6 AS packer
 FROM prom/prometheus:v2.18.1 AS prometheus
 FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.7 AS helm
-FROM lachlanevenson/k8s-helm:v3.2.0 AS helm3
+FROM lachlanevenson/k8s-helm:v3.2.1 AS helm3
 FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
 

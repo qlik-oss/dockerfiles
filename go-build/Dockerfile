@@ -60,7 +60,7 @@ RUN go get -u github.com/jstemmer/go-junit-report
 RUN go get -u github.com/alecthomas/gometalinter \
   && gometalinter --install
 
-FROM golang:1.14.4-alpine3.11 AS build
+FROM golang:1.14.4-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

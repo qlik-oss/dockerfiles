@@ -30,8 +30,8 @@ RUN apk add --no-cache \
     jq \
     curl \
     git \
-    python \
-    py2-pip \
+    python3 \
+    py3-pip \
     openssh-client \
     openssl \
     libgcc \

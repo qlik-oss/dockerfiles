@@ -29,13 +29,13 @@ RUN apk add --no-cache \
     jq \
     curl \
     git \
-    python \
-    py2-pip \
+    python3 \
+    py3-pip \
     openssh-client \
     openssl \
     libgcc
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.31-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 

@@ -1,22 +1,22 @@
 FROM hairyhenderson/gomplate:v3.7.0-slim AS gomplate
-FROM docker:19.03.8 AS docker
-FROM docker/compose:1.25.5 AS compose
+FROM docker:19.03.11 AS docker
+FROM docker/compose:1.26.0 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.12.25 AS terraform
+FROM hashicorp/terraform:0.12.26 AS terraform
 FROM hashicorp/packer:1.5.6 AS packer
 FROM prom/prometheus:v2.18.1 AS prometheus
 FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.7 AS helm
-FROM lachlanevenson/k8s-helm:v3.2.1 AS helm3
+FROM lachlanevenson/k8s-helm:v3.2.2 AS helm3
 
-FROM alpine:3.11.6 AS cc-test-reporter
+FROM alpine:3.12.0 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.11.6 AS packages
+FROM alpine:3.12.0 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -29,13 +29,13 @@ RUN apk add --no-cache \
     jq \
     curl \
     git \
-    python \
-    py2-pip \
+    python3 \
+    py3-pip \
     openssh-client \
     openssl \
     libgcc
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.31-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 

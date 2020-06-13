@@ -3,13 +3,13 @@ FROM docker:19.03.11 AS docker
 FROM docker/compose:1.26.0 AS compose
 FROM vault:0.11.6 AS vault
 FROM hashicorp/terraform:0.12.26 AS terraform
-FROM hashicorp/packer:1.5.6 AS packer
-FROM prom/prometheus:v2.18.1 AS prometheus
+FROM hashicorp/packer:1.6.0 AS packer
+FROM prom/prometheus:v2.19.0 AS prometheus
 FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.3 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.16.7 AS helm
-FROM lachlanevenson/k8s-helm:v3.2.2 AS helm3
+FROM lachlanevenson/k8s-helm:v2.16.8 AS helm
+FROM lachlanevenson/k8s-helm:v3.2.3 AS helm3
 FROM golangci/golangci-lint:v1.27.0-alpine AS golangci-lint
 
 FROM alpine:3.12.0 AS cc-test-reporter

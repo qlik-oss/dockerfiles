@@ -3,13 +3,13 @@ FROM docker:19.03.11 AS docker
 FROM docker/compose:1.26.0 AS compose
 FROM vault:1.4.2 AS vault
 FROM hashicorp/terraform:0.12.26 AS terraform
-FROM hashicorp/packer:1.5.6 AS packer
-FROM prom/prometheus:v2.18.1 AS prometheus
+FROM hashicorp/packer:1.6.0 AS packer
+FROM prom/prometheus:v2.19.0 AS prometheus
 FROM prom/alertmanager:v0.20.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.3 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.16.7 AS helm
-FROM lachlanevenson/k8s-helm:v3.2.2 AS helm3
+FROM lachlanevenson/k8s-helm:v2.16.8 AS helm
+FROM lachlanevenson/k8s-helm:v3.2.3 AS helm3
 FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
 

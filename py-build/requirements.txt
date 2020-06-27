@@ -1,6 +1,6 @@
 astroid==2.4.2
-boto3==1.14.7
-botocore==1.17.7
+boto3==1.14.12
+botocore==1.17.12
 certifi==2020.6.20
 chardet==3.0.4
 docutils==0.16

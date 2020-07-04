@@ -1,4 +1,4 @@
-FROM lachlanevenson/k8s-kubectl:v1.18.4 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.18.5 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.9 AS helm
 
 FROM docker:dind as docker-kubectl-helm

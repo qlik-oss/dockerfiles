@@ -1,5 +1,5 @@
-awscli==1.18.97
-botocore==1.17.20
+awscli==1.18.101
+botocore==1.17.24
 colorama==0.4.3
 docutils==0.16
 jmespath==0.10.0
@@ -10,4 +10,4 @@ rsa==4.6
 s3transfer==0.3.3
 six==1.15.0
 urllib3==1.25.9
-yamllint==1.23.0
+yamllint==1.24.2

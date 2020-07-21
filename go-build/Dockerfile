@@ -10,7 +10,7 @@ FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.18.5 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.9 AS helm
 FROM lachlanevenson/k8s-helm:v3.2.4 AS helm3
-FROM golangci/golangci-lint:v1.28.3-alpine AS golangci-lint
+FROM golangci/golangci-lint:v1.29.0-alpine AS golangci-lint
 
 FROM alpine:3.12.0 AS cc-test-reporter
 
@@ -52,7 +52,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM golang:1.14.4-alpine AS gopackages
+FROM golang:1.14.6-alpine AS gopackages
 
 RUN apk add --no-cache git
 RUN go get -u github.com/golang/dep/cmd/dep
@@ -60,7 +60,7 @@ RUN go get -u github.com/jstemmer/go-junit-report
 RUN go get -u github.com/alecthomas/gometalinter \
   && gometalinter --install
 
-FROM golang:1.14.4-alpine AS build
+FROM golang:1.14.6-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

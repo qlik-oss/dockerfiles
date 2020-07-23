@@ -12,6 +12,7 @@ FROM lachlanevenson/k8s-helm:v2.16.9 AS helm
 FROM lachlanevenson/k8s-helm:v3.2.4 AS helm3
 FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
+FROM instrumenta/conftest:v0.20.0 AS conftest
 
 FROM alpine:3.12.0 AS cc-test-reporter
 
@@ -69,5 +70,6 @@ COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
 COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
 COPY --from=img /usr/bin/img /usr/bin/img
+COPY --from=conftest /usr/local/bin/conftest /usr/local/bin/conftest
 
 COPY --from=packages / /

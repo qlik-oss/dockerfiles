@@ -1,5 +1,5 @@
-awscli==1.18.101
-botocore==1.17.24
+awscli==1.18.111
+botocore==1.17.34
 colorama==0.4.3
 docutils==0.16
 jmespath==0.10.0
@@ -9,5 +9,5 @@ PyYAML==5.3.1
 rsa==4.6
 s3transfer==0.3.3
 six==1.15.0
-urllib3==1.25.9
+urllib3==1.25.10
 yamllint==1.24.2

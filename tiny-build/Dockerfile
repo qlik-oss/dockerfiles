@@ -1,4 +1,4 @@
-FROM hairyhenderson/gomplate:v3.7.0-slim AS gomplate
+FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
 FROM docker:19.03.12 AS docker
 FROM docker/compose:1.26.2 AS compose
 FROM vault:1.5.3 AS vault

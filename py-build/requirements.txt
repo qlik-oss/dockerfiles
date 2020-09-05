@@ -1,13 +1,13 @@
 astroid==2.4.2
-boto3==1.14.51
-botocore==1.17.51
+boto3==1.14.56
+botocore==1.17.56
 certifi==2020.6.20
 chardet==3.0.4
 docutils==0.16
 ecdsa==0.16.0
 future==0.18.2
 idna==2.10
-isort==5.4.2
+isort==5.5.1
 jmespath==0.10.0
 lazy-object-proxy==1.5.1
 mccabe==0.6.1

@@ -27,7 +27,8 @@ RUN apk add --no-cache \
     libgcc \
     python3 \
     py3-pip \
-    bash
+    bash \
+    jq
 
 ENV GLIBC=2.31-r0
 

@@ -1,18 +1,18 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:19.03.12 AS docker
-FROM docker/compose:1.27.0 AS compose
+FROM docker:19.03.13 AS docker
+FROM docker/compose:1.27.3 AS compose
 FROM vault:1.5.3 AS vault
-FROM hashicorp/terraform:0.13.2 AS terraform
+FROM hashicorp/terraform:0.13.3 AS terraform
 FROM hashicorp/packer:1.6.2 AS packer
-FROM prom/prometheus:v2.20.1 AS prometheus
+FROM prom/prometheus:v2.21.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.19.0 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.19.2 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.10 AS helm
 FROM lachlanevenson/k8s-helm:v3.3.1 AS helm3
 FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
-FROM instrumenta/conftest:v0.20.0 AS conftest
+FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.12.0 AS cc-test-reporter
 

@@ -2,8 +2,8 @@ FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
 FROM docker:19.03.13 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.5.4 AS vault
-FROM hashicorp/terraform:0.13.3 AS terraform
-FROM hashicorp/packer:1.6.3 AS packer
+FROM hashicorp/terraform:0.13.4 AS terraform
+FROM hashicorp/packer:1.6.4 AS packer
 FROM prom/prometheus:v2.21.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq

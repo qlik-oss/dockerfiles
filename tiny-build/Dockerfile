@@ -4,11 +4,11 @@ FROM docker/compose:1.27.4 AS compose
 FROM vault:1.5.4 AS vault
 FROM hashicorp/terraform:0.13.4 AS terraform
 FROM hashicorp/packer:1.6.4 AS packer
-FROM prom/prometheus:v2.21.0 AS prometheus
+FROM prom/prometheus:v2.22.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM grafana/cortex-tools:v0.4.0 AS cortextool
 FROM mikefarah/yq:2.4.2 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.19.2 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.19.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
 FROM lachlanevenson/k8s-helm:v3.3.4 AS helm3
 FROM r.j3ss.co/img:v0.5.10 AS img

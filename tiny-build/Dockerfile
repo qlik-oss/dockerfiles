@@ -2,7 +2,7 @@ FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
 FROM docker:19.03.13 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.5.4 AS vault
-FROM hashicorp/terraform:0.13.4 AS terraform
+FROM hashicorp/terraform:0.13.5 AS terraform
 FROM hashicorp/packer:1.6.4 AS packer
 FROM prom/prometheus:v2.22.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
@@ -15,12 +15,12 @@ FROM r.j3ss.co/img:v0.5.10 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.12.0 AS cc-test-reporter
+FROM alpine:3.12.1 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.0 AS packages
+FROM alpine:3.12.1 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -52,7 +52,7 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
-FROM alpine:3.12.0 AS build
+FROM alpine:3.12.1 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

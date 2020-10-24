@@ -2,7 +2,7 @@ FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
 FROM docker:19.03.13 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:0.11.6 AS vault
-FROM hashicorp/terraform:0.13.4 AS terraform
+FROM hashicorp/terraform:0.13.5 AS terraform
 FROM hashicorp/packer:1.6.4 AS packer
 FROM prom/prometheus:v2.22.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
@@ -12,12 +12,12 @@ FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
 FROM lachlanevenson/k8s-helm:v3.3.4 AS helm3
 FROM golangci/golangci-lint:v1.31.0-alpine AS golangci-lint
 
-FROM alpine:3.12.0 AS cc-test-reporter
+FROM alpine:3.12.1 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.0 AS packages
+FROM alpine:3.12.1 AS packages
 
 RUN apk add --no-cache \
     zip \

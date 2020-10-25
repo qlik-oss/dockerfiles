@@ -6,7 +6,7 @@ FROM hashicorp/terraform:0.13.5 AS terraform
 FROM hashicorp/packer:1.6.4 AS packer
 FROM prom/prometheus:v2.22.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
-FROM grafana/cortex-tools:v0.4.0 AS cortextool
+FROM grafana/cortex-tools:v0.4.1 AS cortextool
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.19.3 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.16.11 AS helm

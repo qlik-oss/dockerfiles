@@ -18,6 +18,8 @@ jobs:
       run: |
         docker tag $(< {{ . }}/image.iid) docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
         docker tag $(< {{ . }}/image.iid) qlik/{{ . }}
+        # version tag
+        docker tag $(< {{ . }}/image.iid) qlik/{{ . }}:$(date +'%Y-%m-%d')
     - name: login
       run: |
         echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login docker.pkg.github.com --username {{ "${{ github.actor }}" }} --password-stdin
@@ -27,5 +29,6 @@ jobs:
       run: |
         docker push docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
         docker push qlik/{{ . }}
+        docker push qlik/{{ . }}:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
 {{- end }}{{ end }}

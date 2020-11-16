@@ -20,9 +20,15 @@ jobs:
         docker tag $(< {{ . }}/image.iid) ghcr.io/qlik-oss/{{ . }}:$(date +'%Y-%m-%d')
         docker tag $(< {{ . }}/image.iid) qlik/{{ . }}
         docker tag $(< {{ . }}/image.iid) qlik/{{ . }}:$(date +'%Y-%m-%d')
-    - name: login
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: {{ "${{ github.repository_owner }}" }}
+        password: {{ "${{ secrets.GHCR_TOKEN }}" }}
+      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
+    - name: login to DockerHub
       run: |
-        echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login ghcr.io --username {{ "${{ github.actor }}" }} --password-stdin
         echo {{"${{ secrets.DOCKERHUB_PASSWORD }}"}} | docker login --username {{ "${{ secrets.DOCKERHUB_USERNAME }}" }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push

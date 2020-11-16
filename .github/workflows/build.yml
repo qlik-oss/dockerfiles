@@ -15,18 +15,19 @@ jobs:
       run: docker build --progress plain --iidfile go-build/image.iid -f go-build/Dockerfile go-build/
     - name: tag
       run: |
-        docker tag $(< go-build/image.iid) docker.pkg.github.com/${{ github.repository }}/go-build
+        docker tag $(< go-build/image.iid) ghcr.io/qlik-oss/go-build
+        docker tag $(< go-build/image.iid) ghcr.io/qlik-oss/go-build:$(date +'%Y-%m-%d')
         docker tag $(< go-build/image.iid) qlik/go-build
-        # version tag
         docker tag $(< go-build/image.iid) qlik/go-build:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/go-build
+        docker push ghcr.io/qlik-oss/go-build
+        docker push ghcr.io/qlik-oss/go-build:$(date +'%Y-%m-%d')
         docker push qlik/go-build
         docker push qlik/go-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
@@ -43,18 +44,19 @@ jobs:
       run: docker build --progress plain --iidfile gradle/image.iid -f gradle/Dockerfile gradle/
     - name: tag
       run: |
-        docker tag $(< gradle/image.iid) docker.pkg.github.com/${{ github.repository }}/gradle
+        docker tag $(< gradle/image.iid) ghcr.io/qlik-oss/gradle
+        docker tag $(< gradle/image.iid) ghcr.io/qlik-oss/gradle:$(date +'%Y-%m-%d')
         docker tag $(< gradle/image.iid) qlik/gradle
-        # version tag
         docker tag $(< gradle/image.iid) qlik/gradle:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/gradle
+        docker push ghcr.io/qlik-oss/gradle
+        docker push ghcr.io/qlik-oss/gradle:$(date +'%Y-%m-%d')
         docker push qlik/gradle
         docker push qlik/gradle:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
@@ -71,18 +73,19 @@ jobs:
       run: docker build --progress plain --iidfile node-build/image.iid -f node-build/Dockerfile node-build/
     - name: tag
       run: |
-        docker tag $(< node-build/image.iid) docker.pkg.github.com/${{ github.repository }}/node-build
+        docker tag $(< node-build/image.iid) ghcr.io/qlik-oss/node-build
+        docker tag $(< node-build/image.iid) ghcr.io/qlik-oss/node-build:$(date +'%Y-%m-%d')
         docker tag $(< node-build/image.iid) qlik/node-build
-        # version tag
         docker tag $(< node-build/image.iid) qlik/node-build:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/node-build
+        docker push ghcr.io/qlik-oss/node-build
+        docker push ghcr.io/qlik-oss/node-build:$(date +'%Y-%m-%d')
         docker push qlik/node-build
         docker push qlik/node-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
@@ -99,18 +102,19 @@ jobs:
       run: docker build --progress plain --iidfile py-build/image.iid -f py-build/Dockerfile py-build/
     - name: tag
       run: |
-        docker tag $(< py-build/image.iid) docker.pkg.github.com/${{ github.repository }}/py-build
+        docker tag $(< py-build/image.iid) ghcr.io/qlik-oss/py-build
+        docker tag $(< py-build/image.iid) ghcr.io/qlik-oss/py-build:$(date +'%Y-%m-%d')
         docker tag $(< py-build/image.iid) qlik/py-build
-        # version tag
         docker tag $(< py-build/image.iid) qlik/py-build:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/py-build
+        docker push ghcr.io/qlik-oss/py-build
+        docker push ghcr.io/qlik-oss/py-build:$(date +'%Y-%m-%d')
         docker push qlik/py-build
         docker push qlik/py-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
@@ -127,18 +131,19 @@ jobs:
       run: docker build --progress plain --iidfile socat/image.iid -f socat/Dockerfile socat/
     - name: tag
       run: |
-        docker tag $(< socat/image.iid) docker.pkg.github.com/${{ github.repository }}/socat
+        docker tag $(< socat/image.iid) ghcr.io/qlik-oss/socat
+        docker tag $(< socat/image.iid) ghcr.io/qlik-oss/socat:$(date +'%Y-%m-%d')
         docker tag $(< socat/image.iid) qlik/socat
-        # version tag
         docker tag $(< socat/image.iid) qlik/socat:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/socat
+        docker push ghcr.io/qlik-oss/socat
+        docker push ghcr.io/qlik-oss/socat:$(date +'%Y-%m-%d')
         docker push qlik/socat
         docker push qlik/socat:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
@@ -155,18 +160,19 @@ jobs:
       run: docker build --progress plain --iidfile tiny-build/image.iid -f tiny-build/Dockerfile tiny-build/
     - name: tag
       run: |
-        docker tag $(< tiny-build/image.iid) docker.pkg.github.com/${{ github.repository }}/tiny-build
+        docker tag $(< tiny-build/image.iid) ghcr.io/qlik-oss/tiny-build
+        docker tag $(< tiny-build/image.iid) ghcr.io/qlik-oss/tiny-build:$(date +'%Y-%m-%d')
         docker tag $(< tiny-build/image.iid) qlik/tiny-build
-        # version tag
         docker tag $(< tiny-build/image.iid) qlik/tiny-build:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
         echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/${{ github.repository }}/tiny-build
+        docker push ghcr.io/qlik-oss/tiny-build
+        docker push ghcr.io/qlik-oss/tiny-build:$(date +'%Y-%m-%d')
         docker push qlik/tiny-build
         docker push qlik/tiny-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'

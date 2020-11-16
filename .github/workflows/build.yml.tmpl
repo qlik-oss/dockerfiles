@@ -16,18 +16,19 @@ jobs:
       run: docker build --progress plain --iidfile {{ . }}/image.iid -f {{ . }}/Dockerfile {{ . }}/
     - name: tag
       run: |
-        docker tag $(< {{ . }}/image.iid) docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+        docker tag $(< {{ . }}/image.iid) ghcr.io/qlik-oss/{{ . }}
+        docker tag $(< {{ . }}/image.iid) ghcr.io/qlik-oss/{{ . }}:$(date +'%Y-%m-%d')
         docker tag $(< {{ . }}/image.iid) qlik/{{ . }}
-        # version tag
         docker tag $(< {{ . }}/image.iid) qlik/{{ . }}:$(date +'%Y-%m-%d')
     - name: login
       run: |
-        echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login docker.pkg.github.com --username {{ "${{ github.actor }}" }} --password-stdin
+        echo {{"${{ secrets.GITHUB_TOKEN }}"}} | docker login ghcr.io --username {{ "${{ github.actor }}" }} --password-stdin
         echo {{"${{ secrets.DOCKERHUB_PASSWORD }}"}} | docker login --username {{ "${{ secrets.DOCKERHUB_USERNAME }}" }} --password-stdin
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push docker.pkg.github.com/{{ "${{ github.repository }}" }}/{{ . }}
+        docker push ghcr.io/qlik-oss/{{ . }}
+        docker push ghcr.io/qlik-oss/{{ . }}:$(date +'%Y-%m-%d')
         docker push qlik/{{ . }}
         docker push qlik/{{ . }}:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'

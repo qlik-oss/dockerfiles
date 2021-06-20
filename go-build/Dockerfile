@@ -12,12 +12,12 @@ FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
 FROM lachlanevenson/k8s-helm:v3.4.2 AS helm3
 FROM golangci/golangci-lint:v1.34.1-alpine AS golangci-lint
 
-FROM alpine:3.12.3 AS cc-test-reporter
+FROM alpine:3.14.0 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.14.0 AS packages
 
 RUN apk add --no-cache \
     zip \

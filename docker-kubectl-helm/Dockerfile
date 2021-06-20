@@ -8,5 +8,5 @@ RUN apk add --update ca-certificates \
  && apk add --update -t deps 
 
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm 
+COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
 

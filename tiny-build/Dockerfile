@@ -15,12 +15,12 @@ FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.12.3 AS cc-test-reporter
+FROM alpine:3.14.0 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.14.0 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -53,7 +53,7 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
-FROM alpine:3.12.3 AS build
+FROM alpine:3.14.0 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

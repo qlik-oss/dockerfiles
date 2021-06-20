@@ -8,7 +8,7 @@ FROM prom/prometheus:v2.23.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
+FROM lachlanevenson/k8s-helm:v3.6.1 AS helm
 FROM lachlanevenson/k8s-helm:v3.4.2 AS helm3
 
 FROM alpine:3.12.3 AS cc-test-reporter

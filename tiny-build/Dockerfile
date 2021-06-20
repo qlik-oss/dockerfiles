@@ -9,7 +9,7 @@ FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM grafana/cortex-tools:v0.7.0 AS cortextool
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
+FROM lachlanevenson/k8s-helm:v3.6.1 AS helm
 FROM lachlanevenson/k8s-helm:v3.5.3 AS helm3
 FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk

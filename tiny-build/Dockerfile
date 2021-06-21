@@ -9,8 +9,8 @@ FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM grafana/cortex-tools:v0.7.0 AS cortextool
 FROM mikefarah/yq:2.4.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.16.11 AS helm
-FROM lachlanevenson/k8s-helm:v3.5.3 AS helm3
+FROM lachlanevenson/k8s-helm:v2.17.0 AS helm2
+FROM lachlanevenson/k8s-helm:v3.5.3 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:345.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
@@ -66,8 +66,8 @@ COPY --from=cortextool /usr/bin/cortextool /bin/cortextool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
+COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=helm3 /usr/local/bin/helm /usr/local/bin/helm3
 COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/

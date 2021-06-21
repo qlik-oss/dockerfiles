@@ -1,5 +1,5 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:19.03.14 AS docker
+FROM docker:20.10.7 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.6.1 AS vault
 FROM hashicorp/terraform:0.14.3 AS terraform
@@ -12,7 +12,7 @@ FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.17.0 AS helm2
 FROM lachlanevenson/k8s-helm:v3.5.3 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:285.0.1-alpine AS google-cloud-sdk
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:345.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.12.3 AS cc-test-reporter

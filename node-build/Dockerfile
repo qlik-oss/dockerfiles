@@ -1,7 +1,7 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:19.03.14 AS docker
+FROM docker:20.10.7 AS docker
 FROM docker/compose:1.27.4 AS compose
-FROM vault:0.11.6 AS vault
+FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:0.14.3 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
 FROM prom/prometheus:v2.23.0 AS prometheus
@@ -50,14 +50,14 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM node:12.22.1-alpine AS nodepackages
+FROM node:16.3.0-alpine AS nodepackages
 
 RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
   serverless
 
-FROM node:12.22.1-alpine AS build
+FROM node:16.3.0-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

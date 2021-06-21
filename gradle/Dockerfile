@@ -1,4 +1,4 @@
-FROM java:8-jdk
+FROM java:9-jdk
 MAINTAINER Dave Henderson <dhenderson@gmail.com>
 
 ARG GRADLE_VERSION=2.6

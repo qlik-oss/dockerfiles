@@ -1,6 +1,6 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
 FROM docker:20.10.7 AS docker
-FROM docker/compose:1.27.4 AS compose
+FROM docker/compose:1.29.2 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer

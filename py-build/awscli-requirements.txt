@@ -1,6 +1,6 @@
 awscli==1.22.30
 botocore==1.23.30
-colorama==0.4.4
+colorama==0.4.3
 docutils==0.18.1
 jmespath==0.10.0
 pyasn1==0.4.8

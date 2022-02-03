@@ -52,14 +52,6 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM golang:1.17.6-alpine AS gopackages
-
-RUN apk add --no-cache git
-RUN go get -u github.com/golang/dep/cmd/dep
-RUN go get -u github.com/jstemmer/go-junit-report
-RUN go get -u github.com/alecthomas/gometalinter \
-  && gometalinter --install
-
 FROM golang:1.17.6-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
@@ -78,4 +70,3 @@ COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=golangci-lint /usr/bin/golangci-lint /bin/
 
 COPY --from=packages / /
-COPY --from=gopackages /go /go

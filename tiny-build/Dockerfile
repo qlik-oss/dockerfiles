@@ -77,3 +77,7 @@ COPY --from=img /usr/bin/img /usr/bin/img
 COPY --from=conftest /usr/local/bin/conftest /usr/local/bin/conftest
 
 COPY --from=packages / /
+
+RUN apk add --update --no-cache openssh
+
+EXPOSE 22

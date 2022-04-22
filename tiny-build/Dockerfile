@@ -32,6 +32,8 @@ RUN apk add --no-cache \
     jq \
     curl
 
+RUN apk add --update --no-cache openssh
+
 ENV GLIBC=2.31-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
@@ -77,7 +79,3 @@ COPY --from=img /usr/bin/img /usr/bin/img
 COPY --from=conftest /usr/local/bin/conftest /usr/local/bin/conftest
 
 COPY --from=packages / /
-
-RUN apk add --update --no-cache openssh
-
-EXPOSE 22

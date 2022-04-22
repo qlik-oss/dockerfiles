@@ -30,7 +30,8 @@ RUN apk add --no-cache \
     py3-pip \
     bash \
     jq \
-    curl
+    curl \
+    openssh
 
 ENV GLIBC=2.31-r0
 

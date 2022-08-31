@@ -50,7 +50,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM node:16.17.0-alpine AS nodepackages 
+FROM node:16.17.0-alpine AS nodepackages
 
 RUN npm config set unsafe-perm true
 RUN npm install -g \

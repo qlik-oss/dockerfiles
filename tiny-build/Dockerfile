@@ -12,7 +12,7 @@ FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.17.0 AS helm2
 FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:409.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.12.3 AS cc-test-reporter

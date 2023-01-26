@@ -54,6 +54,8 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
+RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
+
 FROM alpine:3.12.3 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate

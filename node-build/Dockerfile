@@ -1,5 +1,5 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:20.10.7 AS docker
+FROM docker:23.0.1 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform

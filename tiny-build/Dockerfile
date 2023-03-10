@@ -1,4 +1,4 @@
-FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
+FROM hairyhenderson/gomplate:v3.11.4-slim AS gomplate
 FROM docker:23.0.1 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.6.1 AS vault
@@ -7,8 +7,8 @@ FROM hashicorp/packer:1.6.6 AS packer
 FROM prom/prometheus:v2.41.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM grafana/cortex-tools:v0.7.0 AS cortextool
-FROM mikefarah/yq:4.9.6 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
+FROM mikefarah/yq:4.31.2 AS yq
+FROM lachlanevenson/k8s-kubectl:v1.22.16 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img

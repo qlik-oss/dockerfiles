@@ -4,13 +4,13 @@ FROM docker/compose:1.27.4 AS compose
 FROM vault:1.6.1 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
-FROM prom/prometheus:v2.23.0 AS prometheus
+FROM prom/prometheus:v2.41.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM grafana/cortex-tools:v0.7.0 AS cortextool
 FROM mikefarah/yq:4.9.6 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
 FROM lachlanevenson/k8s-helm:v2.17.0 AS helm2
-FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
+FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
@@ -53,6 +53,8 @@ RUN mkdir hub && \
     tar xz --strip-components 1 --directory hub \
     && ./hub/install \
     && rm -r hub
+
+RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
 
 FROM alpine:3.12.3 AS build
 

@@ -1,5 +1,5 @@
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:20.10.7 AS docker
+FROM docker:23.0.1 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
@@ -8,7 +8,7 @@ FROM prom/prometheus:v2.23.0 AS prometheus
 FROM prom/alertmanager:v0.21.0 AS alertmanager
 FROM mikefarah/yq:4.9.6 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v2.17.0 AS helm2
+FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
 
 FROM alpine:3.12.3 AS cc-test-reporter

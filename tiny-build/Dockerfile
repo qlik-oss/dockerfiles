@@ -31,7 +31,8 @@ RUN apk add --no-cache \
     bash \
     jq \
     curl \
-    openssh
+    openssh \
+    github-cli
 
 ENV GLIBC=2.34-r0
 

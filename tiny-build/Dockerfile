@@ -4,7 +4,7 @@ FROM docker/compose:1.27.4 AS compose
 FROM vault:1.6.1 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
-FROM prom/prometheus:v2.39.1 AS prometheus
+FROM prom/prometheus:v2.41.0 AS prometheus
 FROM prom/alertmanager:v0.24.0 AS alertmanager
 FROM grafana/cortex-tools:v0.10.7 AS cortextool
 FROM mikefarah/yq:4.31.2 AS yq

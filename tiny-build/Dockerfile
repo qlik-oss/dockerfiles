@@ -15,12 +15,12 @@ FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.12.3 AS cc-test-reporter
+FROM alpine:3.14.0 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.14.0 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -31,14 +31,15 @@ RUN apk add --no-cache \
     bash \
     jq \
     curl \
-    openssh
+    openssh \
+    github-cli
 
-ENV GLIBC=2.31-r0
+ENV GLIBC=2.34-r0
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 RUN rm -rf requirements.txt ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
@@ -56,7 +57,7 @@ RUN mkdir hub && \
 
 RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
 
-FROM alpine:3.12.3 AS build
+FROM alpine:3.14.3 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

@@ -37,41 +37,6 @@ jobs:
         docker push qlik/go-build
         docker push qlik/go-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-  docker-build-gradle:
-    name: docker build gradle
-    runs-on: ubuntu-latest
-    env:
-      DOCKER_BUILDKIT: "1"
-    steps:
-    - name: docker version
-      run: docker version
-    - uses: actions/checkout@master
-    - name: build
-      run: docker build --progress plain --iidfile gradle/image.iid -f gradle/Dockerfile gradle/
-    - name: tag
-      run: |
-        docker tag $(< gradle/image.iid) ghcr.io/qlik-oss/gradle
-        docker tag $(< gradle/image.iid) ghcr.io/qlik-oss/gradle:$(date +'%Y-%m-%d')
-        docker tag $(< gradle/image.iid) qlik/gradle
-        docker tag $(< gradle/image.iid) qlik/gradle:$(date +'%Y-%m-%d')
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GHCR_TOKEN }}
-      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-    - name: login to DockerHub
-      run: |
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-    - name: docker push
-      run: |
-        docker push ghcr.io/qlik-oss/gradle
-        docker push ghcr.io/qlik-oss/gradle:$(date +'%Y-%m-%d')
-        docker push qlik/gradle
-        docker push qlik/gradle:$(date +'%Y-%m-%d')
-      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
   docker-build-node-build:
     name: docker build node-build
     runs-on: ubuntu-latest

@@ -22,6 +22,7 @@ RUN chmod +x /bin/cc-test-reporter
 
 FROM alpine:3.14.0 AS packages
 
+
 RUN apk add --no-cache \
     make \
     git \

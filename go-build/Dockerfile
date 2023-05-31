@@ -12,12 +12,12 @@ FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
 FROM golangci/golangci-lint:v1.44.0-alpine AS golangci-lint
 
-FROM alpine:3.15 AS cc-test-reporter
+FROM alpine:3.18 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.15 AS packages
+FROM alpine:3.18 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -52,7 +52,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM golang:1.18.1-alpine AS build
+FROM golang:1.19.9-alpine AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

@@ -37,7 +37,7 @@ RUN apk add --no-cache \
     libgcc \
     build-base
 
-ENV GLIBC=2.31-r0
+ENV GLIBC=2.35-r1
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 

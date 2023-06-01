@@ -37,7 +37,7 @@ jobs:
         docker push qlik/go-build
         docker push qlik/go-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-  docker-build-go-build-1.18:
+  docker-build-go-build-1-18:
     name: docker build go-build-1.18
     runs-on: ubuntu-latest
     env:

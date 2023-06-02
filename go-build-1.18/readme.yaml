@@ -1,0 +1,5 @@
+name: go-build-1.18
+description: |
+    This image is built to support building Go-based projects in CircleCI. It comes
+    populated with software generally useful for building and deploying. See the
+    `Dockerfile` in this folder for details.

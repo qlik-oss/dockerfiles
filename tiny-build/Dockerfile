@@ -10,7 +10,7 @@ FROM grafana/cortex-tools:v0.10.7 AS cortextool
 FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.22.16 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
+FROM lachlanevenson/k8s-helm:v3.12.2 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest

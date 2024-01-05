@@ -11,7 +11,6 @@ FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
-FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
@@ -77,7 +76,6 @@ COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
 COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
-COPY --from=img /usr/bin/img /usr/bin/img
 COPY --from=conftest /usr/local/bin/conftest /usr/local/bin/conftest
 
 COPY --from=packages / /

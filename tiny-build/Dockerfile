@@ -1,26 +1,26 @@
-FROM hairyhenderson/gomplate:v3.11.4-slim AS gomplate
+FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
 FROM docker:23.0.1 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.6.1 AS vault
-FROM hashicorp/terraform:1.0.0 AS terraform
+FROM hashicorp/terraform:1.6.6 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
 FROM prom/prometheus:v2.41.0 AS prometheus
 FROM prom/alertmanager:v0.24.0 AS alertmanager
 FROM grafana/cortex-tools:v0.10.7 AS cortextool
 FROM mikefarah/yq:4.31.2 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.22.16 AS kubectl
+FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 FROM r.j3ss.co/img:v0.5.11 AS img
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.14.0 AS cc-test-reporter
+FROM alpine:3.19 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.14.0 AS packages
+FROM alpine:3.19 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -57,7 +57,7 @@ RUN mkdir hub && \
 
 RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
 
-FROM alpine:3.14.3 AS build
+FROM alpine:3.19 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

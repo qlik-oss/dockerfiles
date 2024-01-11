@@ -20,7 +20,7 @@ jobs:
         docker tag $(< go-build/image.iid) qlik/go-build
         docker tag $(< go-build/image.iid) qlik/go-build:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -55,7 +55,7 @@ jobs:
         docker tag $(< go-build-1.18/image.iid) qlik/go-build:1.18
         docker tag $(< go-build-1.18/image.iid) qlik/go-build:1.18-$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -90,7 +90,7 @@ jobs:
         docker tag $(< node-build/image.iid) qlik/node-build
         docker tag $(< node-build/image.iid) qlik/node-build:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -125,7 +125,7 @@ jobs:
         docker tag $(< py-build/image.iid) qlik/py-build
         docker tag $(< py-build/image.iid) qlik/py-build:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -160,7 +160,7 @@ jobs:
         docker tag $(< socat/image.iid) qlik/socat
         docker tag $(< socat/image.iid) qlik/socat:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -195,7 +195,7 @@ jobs:
         docker tag $(< tiny-build/image.iid) qlik/tiny-build
         docker tag $(< tiny-build/image.iid) qlik/tiny-build:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}

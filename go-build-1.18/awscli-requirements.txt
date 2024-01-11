@@ -2,7 +2,7 @@ awscli==1.22.47
 botocore==1.23.47
 colorama==0.4.3
 docutils==0.15.2
-jmespath==0.10.0
+jmespath==1.0.1
 pyasn1==0.4.8
 python-dateutil==2.8.2
 PyYAML==5.4.1

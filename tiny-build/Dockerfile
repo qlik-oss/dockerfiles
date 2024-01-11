@@ -33,12 +33,12 @@ RUN apk add --no-cache \
     openssh \
     github-cli
 
-ENV GLIBC=2.34-r0
+ENV GLIBC=2.35-r1
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt --break-system-packages
 RUN rm -rf requirements.txt ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \

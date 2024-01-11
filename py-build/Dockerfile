@@ -1,22 +1,22 @@
-FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:23.0.1 AS docker
-FROM docker/compose:1.27.4 AS compose
-FROM vault:1.7.3 AS vault
-FROM hashicorp/terraform:1.0.0 AS terraform
-FROM hashicorp/packer:1.6.6 AS packer
-FROM prom/prometheus:v2.23.0 AS prometheus
-FROM prom/alertmanager:v0.21.0 AS alertmanager
-FROM mikefarah/yq:4.9.6 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
+FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
+FROM docker:23.0.6 AS docker
+FROM docker/compose:1.29.2 AS compose
+FROM vault:1.13.3 AS vault
+FROM hashicorp/terraform:1.6.6 AS terraform
+FROM hashicorp/packer:1.10.0 AS packer
+FROM prom/prometheus:v2.48.1 AS prometheus
+FROM prom/alertmanager:v0.26.0 AS alertmanager
+FROM mikefarah/yq:4.40.5 AS yq
+FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
+FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 
-FROM alpine:3.12.3 AS cc-test-reporter
+FROM alpine:3.19.0 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.19.0 AS packages
 
 RUN apk add --no-cache \
     zip \

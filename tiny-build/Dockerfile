@@ -55,8 +55,6 @@ RUN mkdir hub && \
 
 RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
 
-FROM alpine:3.19 AS build
-
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
 COPY --from=vault /bin/vault /bin/vault
@@ -76,4 +74,3 @@ COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/
 COPY --from=google-cloud-sdk /google-cloud-sdk/.install/ /usr/local/.install/
 COPY --from=conftest /usr/local/bin/conftest /usr/local/bin/conftest
 
-COPY --from=packages / /

@@ -11,7 +11,7 @@ FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:477.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.19 AS cc-test-reporter

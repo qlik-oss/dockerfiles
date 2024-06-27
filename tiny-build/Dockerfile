@@ -7,6 +7,7 @@ FROM hashicorp/packer:1.7.10 AS packer
 FROM prom/prometheus:v2.41.0 AS prometheus
 FROM prom/alertmanager:v0.24.0 AS alertmanager
 FROM grafana/cortex-tools:v0.10.7 AS cortextool
+FROM grafana/mimirtool:2.12.0 AS mimirtool
 FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
@@ -66,6 +67,7 @@ COPY --from=packer /bin/packer /bin/packer
 COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=cortextool /usr/bin/cortextool /bin/cortextool
+COPY --from=mimirtool /bin/mimirtool /bin/mimirtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl

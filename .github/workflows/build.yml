@@ -52,8 +52,6 @@ jobs:
       run: |
         docker tag $(< metrics-build/image.iid) ghcr.io/qlik-oss/metrics-build
         docker tag $(< metrics-build/image.iid) ghcr.io/qlik-oss/metrics-build:$(date +'%Y-%m-%d')
-        docker tag $(< metrics-build/image.iid) qlik/metrics-build
-        docker tag $(< metrics-build/image.iid) qlik/metrics-build:$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
       with:
@@ -61,16 +59,10 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GHCR_TOKEN }}
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-    - name: login to DockerHub
-      run: |
-        echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
         docker push ghcr.io/qlik-oss/metrics-build
         docker push ghcr.io/qlik-oss/metrics-build:$(date +'%Y-%m-%d')
-        docker push qlik/metrics-build
-        docker push qlik/metrics-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
   docker-build-go-build-1-18:
     name: docker build go-build-1.18

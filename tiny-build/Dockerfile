@@ -10,8 +10,7 @@ FROM grafana/cortex-tools:v0.10.7 AS cortextool
 FROM grafana/mimirtool:2.12.0 AS mimirtool
 FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
+FROM alpine/helm:v3.14.4 AS helm
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
@@ -71,7 +70,6 @@ COPY --from=mimirtool /bin/mimirtool /bin/mimirtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/

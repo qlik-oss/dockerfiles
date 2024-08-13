@@ -64,8 +64,8 @@ jobs:
         docker push ghcr.io/qlik-oss/metrics-build
         docker push ghcr.io/qlik-oss/metrics-build:$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
-  docker-build-go-build-1-18:
-    name: docker build go-build-1.18
+  docker-build-go-build-1-21:
+    name: docker build go-build-1.21
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
@@ -74,13 +74,13 @@ jobs:
       run: docker version
     - uses: actions/checkout@master
     - name: build
-      run: docker build --progress plain --iidfile go-build-1.18/image.iid -f go-build-1.18/Dockerfile go-build-1.18/
+      run: docker build --progress plain --iidfile go-build-1.21/image.iid -f go-build-1.21/Dockerfile go-build-1.21/
     - name: tag
       run: |
-        docker tag $(< go-build-1.18/image.iid) ghcr.io/qlik-oss/go-build:1.18
-        docker tag $(< go-build-1.18/image.iid) ghcr.io/qlik-oss/go-build:1.18-$(date +'%Y-%m-%d')
-        docker tag $(< go-build-1.18/image.iid) qlik/go-build:1.18
-        docker tag $(< go-build-1.18/image.iid) qlik/go-build:1.18-$(date +'%Y-%m-%d')
+        docker tag $(< go-build-1.21/image.iid) ghcr.io/qlik-oss/go-build:1.21
+        docker tag $(< go-build-1.21/image.iid) ghcr.io/qlik-oss/go-build:1.21-$(date +'%Y-%m-%d')
+        docker tag $(< go-build-1.21/image.iid) qlik/go-build:1.21
+        docker tag $(< go-build-1.21/image.iid) qlik/go-build:1.21-$(date +'%Y-%m-%d')
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
       with:
@@ -94,10 +94,10 @@ jobs:
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
     - name: docker push
       run: |
-        docker push ghcr.io/qlik-oss/go-build:1.18
-        docker push ghcr.io/qlik-oss/go-build:1.18-$(date +'%Y-%m-%d')
-        docker push qlik/go-build:1.18
-        docker push qlik/go-build:1.18-$(date +'%Y-%m-%d')
+        docker push ghcr.io/qlik-oss/go-build:1.21
+        docker push ghcr.io/qlik-oss/go-build:1.21-$(date +'%Y-%m-%d')
+        docker push qlik/go-build:1.21
+        docker push qlik/go-build:1.21-$(date +'%Y-%m-%d')
       if: github.ref == 'refs/heads/master' && github.repository == 'qlik-oss/dockerfiles'
   docker-build-node-build:
     name: docker build node-build

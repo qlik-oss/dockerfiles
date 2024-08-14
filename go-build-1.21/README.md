@@ -1,10 +1,10 @@
-# qlik/go-build-1.18
+# qlik/go-build-1.21
 
 This image is built to support building Go-based projects in CircleCI. It comes
 populated with software generally useful for building and deploying. See the
 `Dockerfile` in this folder for details.
 
-**This image is a backward compatibility image avaiable for Go 1.18 only.**
+**This image is a backward compatibility image avaiable for Go 1.21 only.**
 
 ## Third-Party Licenses
 
@@ -14,7 +14,7 @@ As with all Docker images, these also contain other software which may be under 
 
 As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
 
-The licenses of the contained software can be determined by inspecting the [Dockerfile](https://github.com/qlik-oss/dockerfiles/blob/master/go-build-1.18/Dockerfile)
+The licenses of the contained software can be determined by inspecting the [Dockerfile](https://github.com/qlik-oss/dockerfiles/blob/master/go-build-1.21/Dockerfile)
 
 ## Unsupported
 

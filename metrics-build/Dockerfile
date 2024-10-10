@@ -1,12 +1,12 @@
-FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:27.0.3 AS docker
-FROM hashicorp/vault:1.17.2 AS vault
-FROM hashicorp/terraform:1.9.2 AS terraform
-FROM bitnami/prometheus:2.53.1 AS prometheus
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.3.1 AS docker
+FROM hashicorp/vault:1.18.0 AS vault
+FROM hashicorp/terraform:1.9.7 AS terraform
+FROM bitnami/prometheus:2.54.1 AS prometheus
 FROM bitnami/alertmanager:0.27.0 AS alertmanager
-FROM grafana/mimirtool:2.13.0 AS mimirtool
+FROM grafana/mimirtool:2.14.0 AS mimirtool
 
-FROM alpine:3.19 AS packages
+FROM alpine:3.20 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -19,7 +19,7 @@ RUN apk add --no-cache \
     openssh \
     github-cli
 
-FROM alpine:3.19 AS build
+FROM alpine:3.20 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

@@ -52,7 +52,7 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
 
 FROM node:20.18.1-alpine3.21 AS nodepackages
 
-RUN npm config set unsafe-perm true
+#RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
   serverless

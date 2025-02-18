@@ -1,7 +1,7 @@
 FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:23.0.1 AS docker
+FROM docker:27.5.0 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.9.3 AS vault
+FROM vault:1.13.3 AS vault
 FROM hashicorp/terraform:1.6.6 AS terraform
 FROM hashicorp/packer:1.7.10 AS packer
 FROM prom/prometheus:v2.41.0 AS prometheus
@@ -11,12 +11,12 @@ FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 
-FROM alpine:3.19 AS cc-test-reporter
+FROM alpine:3.21 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.19 AS packages
+FROM alpine:3.21 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -50,14 +50,14 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM node:18.12.1-alpine AS nodepackages
+FROM node:20.18.1-alpine3.21 AS nodepackages
 
-RUN npm config set unsafe-perm true
+#RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
   serverless
 
-FROM node:18.12.1-alpine AS build
+FROM node:20.18.1-alpine3.21 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

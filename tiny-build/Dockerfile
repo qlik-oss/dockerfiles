@@ -1,25 +1,25 @@
-FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:27.1.2 AS docker
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.5.1 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.10.11 AS vault
-FROM hashicorp/terraform:1.6.6 AS terraform
-FROM hashicorp/packer:1.11.2 AS packer
-FROM prom/prometheus:v2.53.2 AS prometheus
-FROM prom/alertmanager:v0.27.0 AS alertmanager
+FROM vault:1.13.3 AS vault
+FROM hashicorp/terraform:1.11.0 AS terraform
+FROM hashicorp/packer:1.12.0 AS packer
+FROM prom/prometheus:v2.55.1 AS prometheus
+FROM prom/alertmanager:v0.28.0 AS alertmanager
 FROM grafana/cortex-tools:v0.11.2 AS cortextool
-FROM grafana/mimirtool:2.12.0 AS mimirtool
-FROM mikefarah/yq:4.44.3 AS yq
-FROM bitnami/kubectl:1.29.7 AS kubectl
-FROM alpine/helm:3.14.4 AS helm
+FROM grafana/mimirtool:2.15.0 AS mimirtool
+FROM mikefarah/yq:4.45.1 AS yq
+FROM bitnami/kubectl:1.32.2 AS kubectl
+FROM alpine/helm:3.17.1 AS helm
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.19 AS cc-test-reporter
+FROM alpine:3.21 AS cc-test-reporter
 
 RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
 RUN chmod +x /bin/cc-test-reporter
 
-FROM alpine:3.19 AS packages
+FROM alpine:3.21 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -56,7 +56,7 @@ RUN mkdir hub && \
 
 RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
 
-FROM alpine:3.19 AS build
+FROM alpine:3.21 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

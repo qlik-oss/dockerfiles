@@ -1,5 +1,5 @@
 FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:27.0.3 AS docker
+FROM docker:28.1.1 AS docker
 FROM hashicorp/vault:1.17.2 AS vault
 FROM hashicorp/terraform:1.9.2 AS terraform
 FROM bitnami/prometheus:2.53.1 AS prometheus

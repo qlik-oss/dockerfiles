@@ -10,7 +10,7 @@ FROM mikefarah/yq:4.31.2 AS yq
 FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
-FROM golangci/golangci-lint:v1.44.0-alpine AS golangci-lint
+FROM golangci/golangci-lint:v2.1.2-alpine AS golangci-lint
 
 FROM alpine:3.19 AS cc-test-reporter
 

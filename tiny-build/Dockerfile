@@ -11,7 +11,7 @@ FROM grafana/mimirtool:2.12.0 AS mimirtool
 FROM mikefarah/yq:4.44.3 AS yq
 FROM bitnami/kubectl:1.29.7 AS kubectl
 FROM alpine/helm:3.14.4 AS helm
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:525.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.19 AS cc-test-reporter

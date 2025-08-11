@@ -6,7 +6,7 @@ chardet==5.1.0
 docutils==0.17.1
 ecdsa==0.16.1
 future==0.18.3
-idna==3.1
+idna==3.7
 isort==5.8.0
 jmespath==0.10.0
 lazy-object-proxy==1.6.0

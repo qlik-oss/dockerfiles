@@ -60,6 +60,7 @@ FROM alpine:3.19 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
+COPY --from=docker /usr/local/libexec/docker/cli-plugins /usr/libexec/docker/cli-plugins
 COPY --from=vault /bin/vault /bin/vault
 COPY --from=terraform /bin/terraform /bin/terraform
 COPY --from=packer /bin/packer /bin/packer

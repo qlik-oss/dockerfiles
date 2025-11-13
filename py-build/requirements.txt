@@ -13,7 +13,7 @@ prometheus-client==0.10.1
 pyasn1==0.4.8
 pylint==2.8.2
 python-dateutil==2.8.1
-python-jose==3.2.0
+python-jose==3.4.0
 requests==2.31.0
 rsa==4.7.2
 six==1.15.0

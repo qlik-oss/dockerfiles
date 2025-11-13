@@ -44,6 +44,20 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
+# Install AWS CLI v2 using the official bundled installer (avoids pip's botocore constraints)
+ARG ARCH=amd64
+RUN if [ "${ARCH}" = "amd64" ]; then \
+            curl -sSLO "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
+            unzip awscli-exe-linux-x86_64.zip; \
+            ./aws/install -i /usr/local/aws-cli -b /usr/local/bin; \
+            rm -rf aws awscli-exe-linux-x86_64.zip; \
+        elif [ "${ARCH}" = "arm64" ] || [ "${ARCH}" = "aarch64" ]; then \
+            curl -sSLO "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"; \
+            unzip awscli-exe-linux-aarch64.zip; \
+            ./aws/install -i /usr/local/aws-cli -b /usr/local/bin; \
+            rm -rf aws awscli-exe-linux-aarch64.zip; \
+        fi
+
 FROM packages AS kubectl
 
 ARG ARCH="amd64"

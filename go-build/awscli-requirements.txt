@@ -1,5 +1,5 @@
-awscli==1.32.16
-botocore==1.34.16
+## awscli will be installed using the official AWS CLI v2 bundled installer
+## so we don't install awscli/botocore via pip. Keep other helper packages.
 colorama==0.4.4
 docutils==0.16
 jmespath==1.0.1
@@ -9,6 +9,7 @@ PyYAML==6.0.1
 rsa==4.7.2
 s3transfer==0.10.0
 six==1.16.0
+## allow urllib3 2.x per request
 urllib3==2.5.0
 yamllint==1.33.0
 requests==2.32.4

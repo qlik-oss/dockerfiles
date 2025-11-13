@@ -1,25 +1,18 @@
 FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:23.0.1 AS docker
+FROM docker:27.5.0 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.9.3 AS vault
+FROM vault:1.10.11 AS vault
 FROM hashicorp/terraform:1.6.6 AS terraform
-FROM hashicorp/packer:1.7.10 AS packer
-FROM prom/prometheus:v2.41.0 AS prometheus
-FROM prom/alertmanager:v0.24.0 AS alertmanager
-FROM grafana/cortex-tools:v0.10.7 AS cortextool
-FROM mikefarah/yq:4.31.2 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
+FROM hashicorp/packer:1.11.2 AS packer
+FROM prom/prometheus:v3.7.3 AS prometheus
+FROM prom/alertmanager:v0.27.0 AS alertmanager
+FROM grafana/cortex-tools:v0.11.2 AS cortextool
+FROM grafana/mimirtool:2.12.0 AS mimirtool
+FROM mikefarah/yq:4.44.3 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.19 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
-FROM alpine:3.19 AS packages
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -54,9 +47,26 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
-RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
+FROM packages AS kubectl
 
-FROM alpine:3.19 AS build
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
+FROM packages AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -66,12 +76,11 @@ COPY --from=packer /bin/packer /bin/packer
 COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=cortextool /usr/bin/cortextool /bin/cortextool
+COPY --from=mimirtool /bin/mimirtool /bin/mimirtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/bin/helm /usr/local/bin/helm
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/

@@ -28,12 +28,13 @@ RUN apk add --no-cache \
     openssl \
     libgcc
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.35-r1
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+ RUN pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
+     pip3 install -r requirements.txt --break-system-packages --no-cache-dir
 RUN rm -rf requirements.txt ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
@@ -62,13 +63,14 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
-FROM python:3.8.3-alpine3.12 AS pypackages
+FROM python:3.9.25-alpine3.22 AS pypackages
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip setuptools wheel packaging --no-cache-dir && \
+    pip3 install -r requirements.txt --break-system-packages --no-cache-dir
 RUN rm requirements.txt
 
-FROM python:3.8.3-alpine3.12 AS build
+FROM python:3.9.25-alpine3.22 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -79,7 +81,7 @@ COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/bin/helm /usr/bin/helm
 
 COPY --from=packages / /

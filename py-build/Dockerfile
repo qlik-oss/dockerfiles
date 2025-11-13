@@ -6,7 +6,7 @@ FROM docker/compose:1.27.4 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
-FROM prom/prometheus:v2.23.0 AS prometheus
+FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.27.0 AS alertmanager
 FROM mikefarah/yq:4.9.6 AS yq
 FROM alpine:3.22 AS packages

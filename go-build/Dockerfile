@@ -4,7 +4,7 @@ FROM docker/compose:1.29.2 AS compose
 FROM hashicorp/vault:1.17.2 AS vault
 FROM hashicorp/terraform:1.9.2 AS terraform
 FROM hashicorp/packer:1.11.2 AS packer
-FROM prom/prometheus:v2.53.2 AS prometheus
+FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.27.0 AS alertmanager
 FROM mikefarah/yq:4.44.3 AS yq
 FROM golangci/golangci-lint:v1.58.0-alpine AS golangci-lint

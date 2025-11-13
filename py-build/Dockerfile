@@ -65,14 +65,18 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
-FROM python:3.9.25-alpine3.22 AS pypackages
+FROM python:3.12-alpine3.22 AS pypackages
 
 COPY requirements.txt .
-RUN pip3 install --upgrade pip setuptools wheel packaging --no-cache-dir && \
-    pip3 install -r requirements.txt --break-system-packages --no-cache-dir
+# Exclude direct astroid pin from requirements so pylint's compatible astroid can be
+# resolved by pip (prevents ResolutionImpossible when pinned astroid conflicts).
+RUN grep -v -E "^astroid(==.*)?$" requirements.txt > /tmp/reqs && \
+    pip3 install --upgrade pip setuptools wheel packaging --no-cache-dir && \
+    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
+    rm -rf /tmp/reqs
 RUN rm requirements.txt
 
-FROM python:3.9.25-alpine3.22 AS build
+FROM python:3.12-alpine3.22 AS build
 
 # Install AWS CLI v2 using the bundled installer (supports amd64 and aarch64)
 ARG ARCH="amd64"

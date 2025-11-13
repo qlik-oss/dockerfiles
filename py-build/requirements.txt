@@ -1,4 +1,4 @@
-astroid==2.15.8
+astroid==4.0.2
 certifi==2024.12.14
 docutils==0.22.3
 ecdsa==0.19.1

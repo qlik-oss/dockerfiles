@@ -12,11 +12,6 @@ FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
 FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
 FROM golangci/golangci-lint:v2.1.2-alpine AS golangci-lint
 
-FROM alpine:3.19 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
 FROM alpine:3.19 AS packages
 
 RUN apk add --no-cache \
@@ -66,7 +61,6 @@ COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
 COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=golangci-lint /usr/bin/golangci-lint /bin/
 
 COPY --from=packages / /

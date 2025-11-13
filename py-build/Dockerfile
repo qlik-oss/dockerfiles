@@ -1,17 +1,15 @@
+ARG KUBECTL_VERSION=v1.29.7
+
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:23.0.1 AS docker
+FROM docker:27.5.0 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
 FROM prom/prometheus:v2.23.0 AS prometheus
-FROM prom/alertmanager:v0.21.0 AS alertmanager
+FROM prom/alertmanager:v0.27.0 AS alertmanager
 FROM mikefarah/yq:4.9.6 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
-
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -45,6 +43,25 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
+FROM packages AS kubectl
+
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
 FROM python:3.8.3-alpine3.12 AS pypackages
 
 COPY requirements.txt .
@@ -63,8 +80,7 @@ COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
+COPY --from=helm /usr/bin/helm /usr/bin/helm
 
 COPY --from=packages / /
 COPY --from=pypackages / /

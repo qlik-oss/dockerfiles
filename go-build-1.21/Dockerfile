@@ -37,8 +37,25 @@ ENV GLIBC=2.35-r1
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-RUN rm -rf requirements.txt ~/.cache
+RUN grep -v -E "^(awscli|botocore)" requirements.txt > /tmp/reqs && \
+    pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
+    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
+    rm -rf /tmp/reqs ~/.cache
+RUN rm -rf requirements.txt
+
+# Install AWS CLI v2 bundled installer for the target ARCH (amd64 or aarch64).
+ARG ARCH=amd64
+RUN set -eux; \
+  case "${ARCH}" in \
+    amd64) file="awscli-exe-linux-x86_64.zip" ;; \
+    arm64|aarch64) file="awscli-exe-linux-aarch64.zip" ;; \
+    *) echo "unsupported ARCH ${ARCH}"; exit 1 ;; \
+  esac; \
+  url="https://awscli.amazonaws.com/${file}"; \
+  curl -fsSL "$url" -o /tmp/${file}; \
+  unzip /tmp/${file} -d /tmp/aws; \
+  /tmp/aws/install --install-dir /usr/local/aws-cli --bin-dir /usr/local/bin || true; \
+  rm -rf /tmp/${file} /tmp/aws
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \

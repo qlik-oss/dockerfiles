@@ -3,7 +3,7 @@ FROM packages AS kubectl
 ARG ARCH="amd64"
 ARG KUBECTL_VERSION=v1.29.7
 RUN apk add --no-cache ca-certificates curl && \
-    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KARCH}/kubectl" && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" && \
     chmod +x /kubectl
 
 FROM packages AS helm

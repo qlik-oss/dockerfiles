@@ -1,13 +1,13 @@
-FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:27.5.0 AS docker
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.5.1 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM hashicorp/vault:1.17.2 AS vault
-FROM hashicorp/terraform:1.9.2 AS terraform
-FROM hashicorp/packer:1.11.2 AS packer
+FROM hashicorp/vault:1.21.0 AS vault
+FROM hashicorp/terraform:1.13.5 AS terraform
+FROM hashicorp/packer:1.14.2 AS packer
 FROM prom/prometheus:v3.7.3 AS prometheus
-FROM prom/alertmanager:v0.27.0 AS alertmanager
-FROM mikefarah/yq:4.44.3 AS yq
-FROM golangci/golangci-lint:v1.58.0-alpine AS golangci-lint
+FROM prom/alertmanager:v0.29.0 AS alertmanager
+FROM mikefarah/yq:4.48.1 AS yq
+FROM golangci/golangci-lint:v1.64.8-alpine AS golangci-lint
 
 FROM alpine:3.22 AS packages
 
@@ -77,7 +77,7 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
-FROM golang:1.23-alpine3.22 AS build
+FROM golang:1.25-alpine3.22 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

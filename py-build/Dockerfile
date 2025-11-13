@@ -1,14 +1,14 @@
 ARG KUBECTL_VERSION=v1.29.7
 
-FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:27.5.0 AS docker
-FROM docker/compose:1.27.4 AS compose
-FROM vault:1.7.3 AS vault
-FROM hashicorp/terraform:1.0.0 AS terraform
-FROM hashicorp/packer:1.6.6 AS packer
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.5.1 AS docker
+FROM docker/compose:1.29.2 AS compose
+FROM vault:1.13.3 AS vault
+FROM hashicorp/terraform:1.13.5 AS terraform
+FROM hashicorp/packer:1.14.2 AS packer
 FROM prom/prometheus:v3.7.3 AS prometheus
-FROM prom/alertmanager:v0.27.0 AS alertmanager
-FROM mikefarah/yq:4.9.6 AS yq
+FROM prom/alertmanager:v0.29.0 AS alertmanager
+FROM mikefarah/yq:4.48.1 AS yq
 FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \

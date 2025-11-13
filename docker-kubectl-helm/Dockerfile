@@ -17,7 +17,7 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
-FROM golang:1.23-alpine3.22 AS build
+FROM golang:1.25-alpine3.22 AS build
 
 FROM docker:dind as docker-kubectl-helm
 

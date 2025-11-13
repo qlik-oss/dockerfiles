@@ -11,7 +11,7 @@ mccabe==0.7.0
 placebo==0.10.0
 prometheus-client==0.23.1
 pyasn1==0.6.1
-pylint==2.17.7
+pylint==4.0.3
 python-dateutil==2.9.0.post0
 python-jose==3.5.0
 requests==2.32.5

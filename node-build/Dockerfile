@@ -1,22 +1,14 @@
 FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
 FROM docker:27.5.0 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.13.3 AS vault
-FROM hashicorp/terraform:1.6.6 AS terraform
-FROM hashicorp/packer:1.7.10 AS packer
-FROM prom/prometheus:v2.41.0 AS prometheus
-FROM prom/alertmanager:v0.24.0 AS alertmanager
-FROM mikefarah/yq:4.31.2 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.25.4 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm
+FROM hashicorp/vault:1.17.2 AS vault
+FROM hashicorp/terraform:1.9.2 AS terraform
+FROM hashicorp/packer:1.11.2 AS packer
+FROM prom/prometheus:v2.53.2 AS prometheus
+FROM prom/alertmanager:v0.27.0 AS alertmanager
+FROM mikefarah/yq:4.44.3 AS yq
 
-FROM alpine:3.21 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
-FROM alpine:3.21 AS packages
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -50,14 +42,33 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM node:20.18.1-alpine3.21 AS nodepackages
+FROM packages AS kubectl
+
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
+FROM node:20.19-alpine3.22 AS nodepackages
 
 #RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
   serverless
 
-FROM node:20.18.1-alpine3.21 AS build
+FROM node:20.19-alpine3.22 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -68,10 +79,8 @@ COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/bin/helm /usr/bin/helm
 
 COPY --from=packages / /
 COPY --from=nodepackages / /

@@ -1,22 +1,15 @@
+ARG KUBECTL_VERSION=v1.29.7
+
 FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:23.0.1 AS docker
+FROM docker:27.5.0 AS docker
 FROM docker/compose:1.27.4 AS compose
 FROM vault:1.7.3 AS vault
 FROM hashicorp/terraform:1.0.0 AS terraform
 FROM hashicorp/packer:1.6.6 AS packer
 FROM prom/prometheus:v2.23.0 AS prometheus
-FROM prom/alertmanager:v0.21.0 AS alertmanager
+FROM prom/alertmanager:v0.27.0 AS alertmanager
 FROM mikefarah/yq:4.9.6 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
-
-FROM alpine:3.12.3 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
-FROM alpine:3.12.3 AS packages
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -35,12 +28,13 @@ RUN apk add --no-cache \
     openssl \
     libgcc
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.35-r1
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+ RUN pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
+     pip3 install -r requirements.txt --break-system-packages --no-cache-dir
 RUN rm -rf requirements.txt ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
@@ -50,13 +44,33 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM python:3.8.3-alpine3.12 AS pypackages
+FROM packages AS kubectl
+
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
+FROM python:3.9.25-alpine3.22 AS pypackages
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip setuptools wheel packaging --no-cache-dir && \
+    pip3 install -r requirements.txt --break-system-packages --no-cache-dir
 RUN rm requirements.txt
 
-FROM python:3.8.3-alpine3.12 AS build
+FROM python:3.9.25-alpine3.22 AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -67,10 +81,8 @@ COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/bin/helm /usr/bin/helm
 
 COPY --from=packages / /
 COPY --from=pypackages / /

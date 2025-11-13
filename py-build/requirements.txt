@@ -18,4 +18,4 @@ requests==2.32.5
 rsa==4.9.1
 six==1.17.0
 urllib3==2.5.0
-wrapt==1.17.3
+wrapt==2.0.1

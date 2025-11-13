@@ -1,22 +1,15 @@
-FROM hairyhenderson/gomplate:v3.8.0-slim AS gomplate
-FROM docker:23.0.1 AS docker
-FROM docker/compose:1.27.4 AS compose
-FROM vault:1.7.3 AS vault
-FROM hashicorp/terraform:1.0.0 AS terraform
-FROM hashicorp/packer:1.6.6 AS packer
-FROM prom/prometheus:v2.23.0 AS prometheus
-FROM prom/alertmanager:v0.21.0 AS alertmanager
-FROM mikefarah/yq:4.9.6 AS yq
-FROM lachlanevenson/k8s-kubectl:v1.20.1 AS kubectl
-FROM lachlanevenson/k8s-helm:v3.10.2 AS helm2
-FROM lachlanevenson/k8s-helm:v3.8.0 AS helm
+ARG KUBECTL_VERSION=v1.29.7
 
-FROM alpine:3.12.3 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
-FROM alpine:3.12.3 AS packages
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.5.1 AS docker
+FROM docker/compose:1.29.2 AS compose
+FROM vault:1.13.3 AS vault
+FROM hashicorp/terraform:1.13.5 AS terraform
+FROM hashicorp/packer:1.14.2 AS packer
+FROM prom/prometheus:v3.7.3 AS prometheus
+FROM prom/alertmanager:v0.29.0 AS alertmanager
+FROM mikefarah/yq:4.48.1 AS yq
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     zip \
@@ -35,13 +28,16 @@ RUN apk add --no-cache \
     openssl \
     libgcc
 
-ENV GLIBC=2.28-r0
+ENV GLIBC=2.35-r1
 
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-RUN rm -rf requirements.txt ~/.cache
+RUN grep -v -E "^(awscli|botocore)" requirements.txt > /tmp/reqs && \
+    pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
+    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
+    rm -rf /tmp/reqs ~/.cache
+RUN rm -rf requirements.txt
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \
@@ -50,13 +46,50 @@ RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/g
   && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
   && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
 
-FROM python:3.8.3-alpine3.12 AS pypackages
+FROM packages AS kubectl
+
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
+FROM python:3.12-alpine3.22 AS pypackages
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Exclude direct astroid pin from requirements so pylint's compatible astroid can be
+# resolved by pip (prevents ResolutionImpossible when pinned astroid conflicts).
+RUN grep -v -E "^astroid(==.*)?$" requirements.txt > /tmp/reqs && \
+    pip3 install --upgrade pip setuptools wheel packaging --no-cache-dir && \
+    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
+    rm -rf /tmp/reqs
 RUN rm requirements.txt
 
-FROM python:3.8.3-alpine3.12 AS build
+FROM python:3.12-alpine3.22 AS build
+
+# Install AWS CLI v2 using the bundled installer (supports amd64 and aarch64)
+ARG ARCH="amd64"
+RUN case "${ARCH}" in \
+            amd64|x86_64) AWS_ZIP="awscli-exe-linux-x86_64.zip" ;; \
+            aarch64|arm64) AWS_ZIP="awscli-exe-linux-aarch64.zip" ;; \
+            *) echo "unsupported ARCH=${ARCH}" >&2; exit 1 ;; \
+        esac && \
+        apk add --no-cache unzip curl && \
+        curl -sSL -o /tmp/${AWS_ZIP} "https://awscli.amazonaws.com/${AWS_ZIP}" && \
+        unzip /tmp/${AWS_ZIP} -d /tmp && \
+        /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
+        rm -rf /tmp/aws /tmp/${AWS_ZIP}
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -67,10 +100,8 @@ COPY --from=prometheus /bin/promtool /bin/promtool
 COPY --from=alertmanager /bin/amtool /bin/amtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /usr/local/bin/kubectl /usr/local/bin/kubectl
-COPY --from=helm2 /usr/local/bin/helm /usr/local/bin/helm2
-COPY --from=helm /usr/local/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/bin/helm /usr/bin/helm
 
 COPY --from=packages / /
 COPY --from=pypackages / /

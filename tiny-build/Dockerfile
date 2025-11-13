@@ -1,25 +1,18 @@
-FROM hairyhenderson/gomplate:v3.11.6-slim AS gomplate
-FROM docker:27.1.2 AS docker
+FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
+FROM docker:27.5.1 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.10.11 AS vault
-FROM hashicorp/terraform:1.6.6 AS terraform
-FROM hashicorp/packer:1.11.2 AS packer
-FROM prom/prometheus:v2.53.2 AS prometheus
-FROM prom/alertmanager:v0.27.0 AS alertmanager
-FROM grafana/cortex-tools:v0.11.2 AS cortextool
-FROM grafana/mimirtool:2.12.0 AS mimirtool
-FROM mikefarah/yq:4.44.3 AS yq
-FROM bitnami/kubectl:1.29.7 AS kubectl
-FROM alpine/helm:3.14.4 AS helm
+FROM vault:1.13.3 AS vault
+FROM hashicorp/terraform:1.13.5 AS terraform
+FROM hashicorp/packer:1.14.2 AS packer
+FROM prom/prometheus:v3.7.3 AS prometheus
+FROM prom/alertmanager:v0.29.0 AS alertmanager
+FROM grafana/cortex-tools:v0.11.3 AS cortextool
+FROM grafana/mimirtool:3.0.0 AS mimirtool
+FROM mikefarah/yq:4.48.1 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
-FROM alpine:3.19 AS cc-test-reporter
-
-RUN wget -q -O /bin/cc-test-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-RUN chmod +x /bin/cc-test-reporter
-
-FROM alpine:3.19 AS packages
+FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
     make \
@@ -38,8 +31,11 @@ ENV GLIBC=2.35-r1
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
 
 COPY awscli-requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt --break-system-packages
-RUN rm -rf requirements.txt ~/.cache
+# Remove awscli and botocore from the pip-installed list to allow urllib3 2.x
+RUN grep -v -E "^(awscli|botocore)" requirements.txt > /tmp/reqs && \
+    pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
+    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
+    rm -rf /tmp/reqs ~/.cache
 
 RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
   && apk add --no-cache glibc-$GLIBC.apk \
@@ -54,9 +50,39 @@ RUN mkdir hub && \
     && ./hub/install \
     && rm -r hub
 
-RUN ln -s /usr/local/bin/helm /usr/local/bin/helm3
+FROM packages AS kubectl
 
-FROM alpine:3.19 AS build
+ARG ARCH="amd64"
+ARG KUBECTL_VERSION=v1.29.7
+RUN apk add --no-cache ca-certificates curl && \
+    curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" && \
+    chmod +x /kubectl
+
+FROM packages AS helm
+
+ARG ARCH="amd64"
+ARG HELM_LATEST_VERSION="v3.17.3"
+
+RUN apk add --update --no-cache ca-certificates wget \
+    && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && tar -xf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
+    && mv linux-amd64/helm /usr/bin/helm \
+    && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
+
+FROM packages AS build
+
+# Install AWS CLI v2 using the bundled installer (supports amd64 and aarch64)
+ARG ARCH="amd64"
+RUN case "${ARCH}" in \
+            amd64|x86_64) AWS_ZIP="awscli-exe-linux-x86_64.zip" ;; \
+            aarch64|arm64) AWS_ZIP="awscli-exe-linux-aarch64.zip" ;; \
+            *) echo "unsupported ARCH=${ARCH}" >&2; exit 1 ;; \
+        esac && \
+        apk add --no-cache unzip curl && \
+        curl -sSL -o /tmp/${AWS_ZIP} "https://awscli.amazonaws.com/${AWS_ZIP}" && \
+        unzip /tmp/${AWS_ZIP} -d /tmp && \
+        /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
+        rm -rf /tmp/aws /tmp/${AWS_ZIP}
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker
@@ -70,9 +96,8 @@ COPY --from=cortextool /usr/bin/cortextool /bin/cortextool
 COPY --from=mimirtool /bin/mimirtool /bin/mimirtool
 COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
-COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/kubectl
+COPY --from=kubectl /kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/bin/helm /usr/local/bin/helm
-COPY --from=cc-test-reporter /bin/cc-test-reporter /bin/cc-test-reporter
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/

@@ -1,7 +1,7 @@
 ARG KUBECTL_VERSION=v1.29.7
 
 FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
-FROM docker:27.5.1 AS docker
+FROM docker:29.0.1 AS docker
 FROM docker/compose:1.29.2 AS compose
 FROM vault:1.13.3 AS vault
 FROM hashicorp/terraform:1.13.5 AS terraform

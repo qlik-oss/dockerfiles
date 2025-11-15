@@ -8,7 +8,7 @@ FROM hashicorp/terraform:1.13.5 AS terraform
 FROM hashicorp/packer:1.14.2 AS packer
 FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.29.0 AS alertmanager
-FROM mikefarah/yq:4.48.1 AS yq
+FROM mikefarah/yq:4.48.2 AS yq
 FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \

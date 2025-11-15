@@ -1,5 +1,5 @@
 astroid==4.0.2
-certifi==2024.12.14
+certifi==2025.11.12
 docutils==0.22.3
 ecdsa==0.19.1
 future==1.0.0

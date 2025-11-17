@@ -15,37 +15,20 @@ FROM instrumenta/conftest:v0.21.0 AS conftest
 FROM alpine:3.22 AS packages
 
 RUN apk add --no-cache \
-    make \
-    git \
-    libgcc \
-    python3 \
-    py3-pip \
+    aws-cli \
     bash \
-    jq \
     curl \
+    git \
+    github-cli \
+    jq \
+    libgcc \
+    make \
     openssh \
-    github-cli
-
-ENV GLIBC=2.35-r1
-
-RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-
-COPY awscli-requirements.txt requirements.txt
-# Remove awscli and botocore from the pip-installed list to allow urllib3 2.x
-RUN grep -v -E "^(awscli|botocore)" requirements.txt > /tmp/reqs && \
-    pip3 install --upgrade pip setuptools wheel packaging --break-system-packages --no-cache-dir && \
-    pip3 install -r /tmp/reqs --break-system-packages --no-cache-dir && \
-    rm -rf /tmp/reqs ~/.cache
-
-RUN wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC/glibc-$GLIBC.apk \
-  && apk add --no-cache glibc-$GLIBC.apk \
-  && rm glibc-$GLIBC.apk \
-  && ln -s /lib/libz.so.1 /usr/glibc-compat/lib \
-  && ln -s /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib \
-  && ln -s /usr/lib/libgcc_s.so.1 /usr/glibc-compat/lib
+    py3-pip \
+    python3
 
 RUN mkdir hub && \
-    wget https://github.com/github/hub/releases/download/v2.12.2/hub-linux-amd64-2.12.2.tgz -O- | \
+    wget https://github.com/github/hub/releases/download/v2.14.2/hub-linux-amd64-2.14.2.tgz -O- | \
     tar xz --strip-components 1 --directory hub \
     && ./hub/install \
     && rm -r hub
@@ -70,19 +53,6 @@ RUN apk add --update --no-cache ca-certificates wget \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
 FROM packages AS build
-
-# Install AWS CLI v2 using the bundled installer (supports amd64 and aarch64)
-ARG ARCH="amd64"
-RUN case "${ARCH}" in \
-            amd64|x86_64) AWS_ZIP="awscli-exe-linux-x86_64.zip" ;; \
-            aarch64|arm64) AWS_ZIP="awscli-exe-linux-aarch64.zip" ;; \
-            *) echo "unsupported ARCH=${ARCH}" >&2; exit 1 ;; \
-        esac && \
-        apk add --no-cache unzip curl && \
-        curl -sSL -o /tmp/${AWS_ZIP} "https://awscli.amazonaws.com/${AWS_ZIP}" && \
-        unzip /tmp/${AWS_ZIP} -d /tmp && \
-        /tmp/aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
-        rm -rf /tmp/aws /tmp/${AWS_ZIP}
 
 COPY --from=gomplate /gomplate /bin/gomplate
 COPY --from=docker /usr/local/bin/docker /bin/docker

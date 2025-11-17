@@ -8,7 +8,7 @@ FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.29.0 AS alertmanager
 FROM grafana/cortex-tools:v0.11.3 AS cortextool
 FROM grafana/mimirtool:3.0.0 AS mimirtool
-FROM mikefarah/yq:4.48.1 AS yq
+FROM mikefarah/yq:4.48.2 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:371.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 

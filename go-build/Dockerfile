@@ -1,12 +1,12 @@
 FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
-FROM docker:29.0.1 AS docker
+FROM docker:29.0.4 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM hashicorp/vault:1.21.0 AS vault
-FROM hashicorp/terraform:1.13.5 AS terraform
-FROM hashicorp/packer:1.14.2 AS packer
+FROM hashicorp/vault:1.21.1 AS vault
+FROM hashicorp/terraform:1.14.0 AS terraform
+FROM hashicorp/packer:1.14.3 AS packer
 FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.29.0 AS alertmanager
-FROM mikefarah/yq:4.48.2 AS yq
+FROM mikefarah/yq:4.49.2 AS yq
 FROM golangci/golangci-lint:v2.6.2-alpine AS golangci-lint
 
 FROM alpine:3.22 AS packages

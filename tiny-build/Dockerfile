@@ -9,7 +9,7 @@ FROM prom/alertmanager:v0.29.0 AS alertmanager
 FROM grafana/cortex-tools:v0.11.3 AS cortextool
 FROM grafana/mimirtool:3.0.0 AS mimirtool
 FROM mikefarah/yq:4.49.2 AS yq
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:547.0.0-alpine AS google-cloud-sdk
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:548.0.0-alpine AS google-cloud-sdk
 FROM instrumenta/conftest:v0.21.0 AS conftest
 
 FROM alpine:3.22 AS packages

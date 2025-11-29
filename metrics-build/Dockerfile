@@ -4,7 +4,7 @@ FROM hashicorp/vault:1.21.1 AS vault
 FROM hashicorp/terraform:1.14.0 AS terraform
 FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.29.0 AS alertmanager
-FROM grafana/mimirtool:3.0.0 AS mimirtool
+FROM grafana/mimirtool:3.0.1 AS mimirtool
 
 FROM alpine:3.22 AS packages
 

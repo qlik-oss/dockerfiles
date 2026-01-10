@@ -9,6 +9,6 @@ PyYAML==6.0.3
 rsa==4.9.1
 s3transfer==0.15.0
 six==1.17.0
-urllib3==2.5.0
+urllib3==2.6.0
 yamllint==1.37.1
 requests==2.32.5

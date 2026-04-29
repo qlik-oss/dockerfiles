@@ -22,6 +22,7 @@ RUN apk add --no-cache \
     github-cli \
     jq \
     libgcc \
+    libstdc++ \
     make \
     openssh \
     py3-pip \
@@ -52,6 +53,16 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
+FROM packages AS bun
+
+ARG ARCH="x64"
+ARG BUN_LATEST_VERSION="v1.3.13"
+
+RUN wget -q https://github.com/oven-sh/bun/releases/download/bun-${BUN_LATEST_VERSION}/bun-linux-${ARCH}-musl.zip \
+    && unzip bun-linux-${ARCH}-musl.zip \
+    && mv bun-linux-${ARCH}-musl/bun /usr/bin/bun \
+    && rm -Rf bun-linux-${ARCH}-musl.zip bun-linux-${ARCH}-musl
+
 FROM packages AS build
 
 COPY --from=gomplate /gomplate /bin/gomplate
@@ -67,6 +78,7 @@ COPY --from=yq /usr/bin/yq /usr/bin/yq
 COPY --from=compose /usr/local/bin/docker-compose /bin/docker-compose
 COPY --from=kubectl /kubectl /usr/local/bin/kubectl
 COPY --from=helm /usr/bin/helm /usr/local/bin/helm
+COPY --from=bun /usr/bin/bun /usr/local/bin/bun
 COPY --from=google-cloud-sdk /google-cloud-sdk/bin/ /usr/local/bin/
 COPY --from=google-cloud-sdk /google-cloud-sdk/lib/ /usr/local/lib/
 COPY --from=google-cloud-sdk /google-cloud-sdk/platform/ /usr/local/platform/

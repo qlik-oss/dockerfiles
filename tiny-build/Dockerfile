@@ -1,16 +1,16 @@
-FROM hairyhenderson/gomplate:v4.3 AS gomplate
-FROM docker:29.0.4 AS docker
+FROM hairyhenderson/gomplate:v5.2.0 AS gomplate
+FROM docker:29.6.1 AS docker
 FROM docker/compose:1.29.2 AS compose
-FROM vault:1.13.3 AS vault
-FROM hashicorp/terraform:1.14.0 AS terraform
-FROM hashicorp/packer:1.14.3 AS packer
-FROM prom/prometheus:v3.7.3 AS prometheus
-FROM prom/alertmanager:v0.29.0 AS alertmanager
+FROM hashicorp/vault:1.21.4 AS vault
+FROM hashicorp/terraform:1.15.8 AS terraform
+FROM hashicorp/packer:1.15.4 AS packer
+FROM prom/prometheus:v3.13.1 AS prometheus
+FROM prom/alertmanager:v0.33.1 AS alertmanager
 FROM grafana/cortex-tools:v0.11.3 AS cortextool
 FROM grafana/mimirtool:3.0.0 AS mimirtool
-FROM mikefarah/yq:4.49.2 AS yq
+FROM mikefarah/yq:4.53.3 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:548.0.0-alpine AS google-cloud-sdk
-FROM instrumenta/conftest:v0.21.0 AS conftest
+FROM openpolicyagent/conftest:v0.68.2 AS conftest
 
 FROM alpine:3.22 AS packages
 
@@ -37,7 +37,7 @@ RUN mkdir hub && \
 FROM packages AS kubectl
 
 ARG ARCH="amd64"
-ARG KUBECTL_VERSION=v1.29.7
+ARG KUBECTL_VERSION=v1.34.9
 RUN apk add --no-cache ca-certificates curl && \
     curl -sSL -o /kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${ARCH}/kubectl" && \
     chmod +x /kubectl
@@ -45,7 +45,7 @@ RUN apk add --no-cache ca-certificates curl && \
 FROM packages AS helm
 
 ARG ARCH="amd64"
-ARG HELM_LATEST_VERSION="v3.17.3"
+ARG HELM_LATEST_VERSION="v3.21.1"
 
 RUN apk add --update --no-cache ca-certificates wget \
     && wget -q https://get.helm.sh/helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz \
@@ -56,7 +56,7 @@ RUN apk add --update --no-cache ca-certificates wget \
 FROM packages AS bun
 
 ARG ARCH="x64"
-ARG BUN_LATEST_VERSION="v1.3.13"
+ARG BUN_LATEST_VERSION="v1.3.14"
 
 RUN wget -q https://github.com/oven-sh/bun/releases/download/bun-${BUN_LATEST_VERSION}/bun-linux-${ARCH}-musl.zip \
     && unzip bun-linux-${ARCH}-musl.zip \

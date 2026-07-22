@@ -64,14 +64,14 @@ RUN apk add --update --no-cache ca-certificates wget \
     && mv linux-amd64/helm /usr/bin/helm \
     && rm -Rf helm-${HELM_LATEST_VERSION}-linux-amd64.tar.gz linux-amd64
 
-FROM node:25.2-alpine3.22 AS nodepackages
+FROM node:26.3-alpine3.22 AS nodepackages
 
 #RUN npm config set unsafe-perm true
 RUN npm install -g \
   mocha \
   serverless
 
-FROM node:25.2-alpine3.22 AS build
+FROM node:26.3-alpine3.22 AS build
 
 # Install AWS CLI v2 using the bundled installer (supports amd64 and aarch64)
 ARG ARCH="amd64"

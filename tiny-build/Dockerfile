@@ -1,6 +1,6 @@
 FROM hairyhenderson/gomplate:v5.2.0 AS gomplate
 FROM docker:29.6.1 AS docker
-FROM docker/compose:v1.29.2 AS compose
+FROM docker/compose:1.29.2 AS compose
 FROM hashicorp/vault:1.21.4 AS vault
 FROM hashicorp/terraform:1.15.8 AS terraform
 FROM hashicorp/packer:1.15.4 AS packer

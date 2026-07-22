@@ -1,4 +1,4 @@
-FROM hairyhenderson/gomplate:v5.3 AS gomplate
+FROM hairyhenderson/gomplate:v5.2.0 AS gomplate
 FROM docker:29.6.1 AS docker
 FROM docker/compose:v1.29.2 AS compose
 FROM hashicorp/vault:1.21.4 AS vault

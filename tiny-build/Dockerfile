@@ -10,7 +10,7 @@ FROM grafana/cortex-tools:v0.11.3 AS cortextool
 FROM grafana/mimirtool:3.0.0 AS mimirtool
 FROM mikefarah/yq:4.53.3 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:548.0.0-alpine AS google-cloud-sdk
-FROM open-policy-agent/conftest:v0.68.2 AS conftest
+FROM openpolicyagent/conftest:v0.68.2 AS conftest
 
 FROM alpine:3.22 AS packages
 

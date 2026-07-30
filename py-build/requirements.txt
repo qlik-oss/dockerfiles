@@ -17,5 +17,5 @@ python-jose==3.5.0
 requests==2.32.5
 rsa==4.9.1
 six==1.17.0
-urllib3==2.5.0
+urllib3==2.6.0
 wrapt==2.0.1

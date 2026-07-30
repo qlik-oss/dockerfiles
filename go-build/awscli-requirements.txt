@@ -3,7 +3,7 @@
 colorama==0.4.6
 docutils==0.22.3
 jmespath==1.0.1
-pyasn1==0.6.1
+pyasn1==0.6.2
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 rsa==4.9.1

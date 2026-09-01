@@ -1,6 +1,6 @@
 FROM hairyhenderson/gomplate:v3.11.7-slim AS gomplate
 FROM docker:29.0.4 AS docker
-FROM hashicorp/vault:1.21.1 AS vault
+FROM hashicorp/vault:2.1.0 AS vault
 FROM hashicorp/terraform:1.14.0 AS terraform
 FROM prom/prometheus:v3.7.3 AS prometheus
 FROM prom/alertmanager:v0.29.0 AS alertmanager

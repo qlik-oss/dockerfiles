@@ -1,6 +1,6 @@
-astroid==4.0.2
+astroid==4.3.1
 certifi==2025.11.12
-docutils==0.22.3
+docutils==0.23
 ecdsa==0.19.1
 future==1.0.0
 idna==3.11
@@ -9,13 +9,13 @@ jmespath==0.10.0
 lazy-object-proxy==1.12.0
 mccabe==0.7.0
 placebo==0.10.0
-prometheus-client==0.23.1
+prometheus-client==0.26.0
 pyasn1==0.6.1
-pylint==4.0.3
+pylint==4.0.8
 python-dateutil==2.9.0.post0
 python-jose==3.5.0
 requests==2.32.5
 rsa==4.9.1
 six==1.17.0
 urllib3==2.5.0
-wrapt==2.0.1
+wrapt==2.4.0

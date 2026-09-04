@@ -1,18 +1,18 @@
 FROM hairyhenderson/gomplate:v5.2.0 AS gomplate
-FROM docker:29.6.1 AS docker
+FROM docker:29.8.0 AS docker
 FROM docker/compose:1.29.2 AS compose
 FROM hashicorp/vault:1.21.4 AS vault
-FROM hashicorp/terraform:1.15.8 AS terraform
-FROM hashicorp/packer:1.15.4 AS packer
-FROM prom/prometheus:v3.13.1 AS prometheus
-FROM prom/alertmanager:v0.33.1 AS alertmanager
+FROM hashicorp/terraform:1.16.1 AS terraform
+FROM hashicorp/packer:1.16.0 AS packer
+FROM prom/prometheus:v3.14.0 AS prometheus
+FROM prom/alertmanager:v0.34.0 AS alertmanager
 FROM grafana/cortex-tools:v0.11.3 AS cortextool
-FROM grafana/mimirtool:3.0.0 AS mimirtool
-FROM mikefarah/yq:4.53.3 AS yq
+FROM grafana/mimirtool:3.2.0 AS mimirtool
+FROM mikefarah/yq:4.53.6 AS yq
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:548.0.0-alpine AS google-cloud-sdk
-FROM openpolicyagent/conftest:v0.68.2 AS conftest
+FROM openpolicyagent/conftest:v0.69.0 AS conftest
 
-FROM alpine:3.22 AS packages
+FROM alpine:3.24 AS packages
 
 RUN apk add --no-cache \
     aws-cli \

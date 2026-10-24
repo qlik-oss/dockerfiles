@@ -1,4 +1,4 @@
-awscli==1.43.4
+awscli==1.45.28
 botocore==1.41.4
 colorama==0.4.6
 docutils==0.22.3

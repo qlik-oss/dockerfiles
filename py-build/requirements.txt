@@ -1,7 +1,7 @@
 astroid==4.0.2
 certifi==2025.11.12
 docutils==0.22.3
-ecdsa==0.19.1
+ecdsa==0.19.2
 future==1.0.0
 idna==3.11
 isort==7.0.0
